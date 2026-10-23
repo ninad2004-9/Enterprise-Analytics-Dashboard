@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataSphere — Enterprise Analytics Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-base:       #0a0d14;
+            --bg-surface:    #111827;
+            --bg-elevated:   #1a2234;
+            --bg-overlay:    #243048;
+            --primary:       #4f8ef7;
+            --primary-dark:  #2563eb;
+            --primary-glow:  rgba(79,142,247,0.18);
+            --primary-bright:#60a5fa;
+            --green:         #34d399;
+            --green-glow:    rgba(52,211,153,0.15);
+            --purple:        #a78bfa;
+            --orange:        #fb923c;
+            --red:           #f87171;
+            --cyan:          #22d3ee;
+            --border:        #1e293b;
+            --border-light:  #263352;
+            --text-primary:  #f1f5f9;
+            --text-secondary:#94a3b8;
+            --text-muted:    #475569;
+            --gradient-hero: linear-gradient(135deg, #0a0d14 0%, #0f1729 50%, #0a0d14 100%);
+        }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-base);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: var(--bg-base); }
+        ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeInUp    { from { opacity:0; transform:translateY(40px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes fadeInLeft  { from { opacity:0; transform:translateX(-30px); } to { opacity:1; transform:translateX(0); } }
+        @keyframes fadeInRight { from { opacity:0; transform:translateX(30px); } to { opacity:1; transform:translateX(0); } }
+        @keyframes floatY      { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-14px); } }
+        @keyframes floatY2     { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-10px); } }
+        @keyframes floatRotate { 0%,100% { transform:translateY(0) rotate(0deg); } 50% { transform:translateY(-8px) rotate(5deg); } }
+        @keyframes pulse-ring  { 0% { transform:scale(1); opacity:0.8; } 100% { transform:scale(1.6); opacity:0; } }
+        @keyframes blink       { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+        @keyframes shimmer     { 0% { background-position:-200% 0; } 100% { background-position:200% 0; } }
+        @keyframes gradient-shift { 0%,100% { background-position:0% 50%; } 50% { background-position:100% 50%; } }
+        @keyframes spin-slow   { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
+        @keyframes dot-pulse   { 0%,100% { transform:scale(1); opacity:1; } 50% { transform:scale(1.3); opacity:0.6; } }
+        @keyframes number-pop  { from { opacity:0; transform:scale(0.7); } to { opacity:1; transform:scale(1); } }
+        @keyframes line-draw   { from { stroke-dashoffset: 300; } to { stroke-dashoffset: 0; } }
+
+        /* ===== BG GRID ===== */
+        .bg-grid {
+            position: fixed; inset: 0;
+            background-image:
+                linear-gradient(rgba(30,41,59,0.4) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(30,41,59,0.4) 1px, transparent 1px);
+            background-size: 64px 64px;
+            pointer-events: none; z-index: 0;
+        }
+        .bg-glow-1 {
+            position: fixed; top: -250px; left: -150px;
+            width: 700px; height: 700px;
+            background: radial-gradient(circle, rgba(79,142,247,0.07) 0%, transparent 65%);
+            pointer-events: none; z-index: 0;
+        }
+        .bg-glow-2 {
+            position: fixed; bottom: -250px; right: -150px;
+            width: 700px; height: 700px;
+            background: radial-gradient(circle, rgba(167,139,250,0.05) 0%, transparent 65%);
+            pointer-events: none; z-index: 0;
+        }
+
+        /* ===== NAVBAR ===== */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            background: rgba(10,13,20,0.88);
+            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--border);
+            height: 66px; padding: 0 2rem;
+            display: flex; align-items: center;
+            transition: all 0.3s;
+        }
+        nav.scrolled { background: rgba(10,13,20,0.98); box-shadow: 0 4px 30px rgba(0,0,0,0.4); }
+        .nav-inner {
+            max-width: 1280px; margin: 0 auto; width: 100%;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+
+        /* ── LOGO (Image 1 style) ── */
+        .nav-brand { display: flex; align-items: center; gap: 0.7rem; text-decoration: none; }
+        .nav-logo-box {
+            width: 36px; height: 36px; border-radius: 9px;
+            background: linear-gradient(145deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 18px rgba(59,130,246,0.45), inset 0 1px 0 rgba(255,255,255,0.15);
+            flex-shrink: 0;
+        }
+        /* SVG diamond inside the box */
+        .nav-logo-box svg { width: 20px; height: 20px; }
+        .nav-brand-name {
+            font-size: 1.22rem; font-weight: 800; letter-spacing: -0.02em;
+            color: var(--text-primary);
+        }
+        .nav-badge {
+            font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+            color: var(--primary); background: var(--primary-glow);
+            border: 1px solid rgba(79,142,247,0.25);
+            padding: 2px 7px; border-radius: 20px;
+        }
+
+        .nav-links { display: flex; align-items: center; gap: 0.15rem; }
+        .nav-links a {
+            color: var(--text-secondary); text-decoration: none; font-size: 0.875rem; font-weight: 500;
+            padding: 0.45rem 0.85rem; border-radius: 6px; transition: all 0.2s;
+        }
+        .nav-links a:hover { color: var(--text-primary); background: var(--bg-elevated); }
+        .nav-actions { display: flex; align-items: center; gap: 0.6rem; }
+        .btn-ghost {
+            background: none; border: 1px solid var(--border-light); color: var(--text-secondary);
+            padding: 0.45rem 1rem; border-radius: 7px; font-size: 0.865rem; font-weight: 500;
+            cursor: pointer; text-decoration: none; transition: all 0.2s; font-family: inherit;
+        }
+        .btn-ghost:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-glow); }
+        .btn-primary-nav {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            border: none; color: #fff; padding: 0.5rem 1.2rem; border-radius: 7px;
+            font-size: 0.865rem; font-weight: 600; cursor: pointer; text-decoration: none;
+            font-family: inherit; transition: all 0.25s;
+            box-shadow: 0 0 18px rgba(79,142,247,0.3);
+        }
+        .btn-primary-nav:hover { transform: translateY(-1px); box-shadow: 0 4px 24px rgba(79,142,247,0.45); }
+
+        /* ===== HERO ===== */
+        .hero {
+            position: relative; z-index: 1;
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            text-align: center;
+            padding: 7rem 2rem 4rem;
+            overflow: hidden;
+        }
+
+        /* ── Floating elements (Image 3 style) ── */
+        .floating-elem {
+            position: absolute;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Icon circles */
+        .float-icon {
+            width: 52px; height: 52px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem; border: 1px solid;
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+        }
+        .float-icon.blue  { background: rgba(79,142,247,0.12);  border-color: rgba(79,142,247,0.25);  color: var(--primary-bright); }
+        .float-icon.green { background: rgba(52,211,153,0.10); border-color: rgba(52,211,153,0.22); color: var(--green); }
+        .float-icon.purple{ background: rgba(167,139,250,0.10); border-color: rgba(167,139,250,0.22); color: var(--purple); }
+        .float-icon.cyan  { background: rgba(34,211,238,0.10); border-color: rgba(34,211,238,0.22); color: var(--cyan); }
+        .float-icon.orange{ background: rgba(251,146,60,0.10); border-color: rgba(251,146,60,0.22); color: var(--orange); }
+
+        /* Pulse ring behind icon */
+        .pulse-ring {
+            position: absolute; inset: -8px;
+            border-radius: 50%; border: 1px solid rgba(79,142,247,0.25);
+            animation: pulse-ring 2.5s ease-out infinite;
+        }
+
+        /* Mini floating cards */
+        .float-card {
+            background: rgba(17,24,39,0.85);
+            border: 1px solid var(--border-light);
+            border-radius: 12px; padding: 0.7rem 1rem;
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            white-space: nowrap;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+        .float-card-title { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.2rem; }
+        .float-card-value { font-size: 1.1rem; font-weight: 800; }
+        .float-card-badge { font-size: 0.65rem; font-weight: 600; color: var(--green); margin-top: 0.15rem; }
+
+        /* Dot particles */
+        .float-dot {
+            width: 6px; height: 6px; border-radius: 50%;
+            animation: dot-pulse 2s ease-in-out infinite;
+        }
+
+        /* Connector line (horizontal dashes) */
+        .float-line {
+            height: 1px; background: linear-gradient(90deg, transparent, var(--border-light), transparent);
+            position: absolute;
+        }
+
+        /* Exact positions */
+        .fe-phone     { top: 22%; left: 5%;  animation: floatY 4s ease-in-out infinite; }
+        .fe-phone .pulse-ring { animation-delay: 0s; }
+        .fe-brain     { top: 40%; left: 2%;  animation: floatY2 5s ease-in-out infinite 0.5s; }
+        .fe-activity  { bottom: 28%; left: 6%; animation: floatY 4.5s ease-in-out infinite 1s; }
+        .fe-user      { top: 18%; right: 5%; animation: floatY2 4.2s ease-in-out infinite 0.3s; }
+        .fe-shield    { top: 42%; right: 2%; animation: floatY 5s ease-in-out infinite 0.8s; }
+        .fe-chat      { bottom: 28%; right: 6%; animation: floatY2 4.8s ease-in-out infinite 1.2s; }
+
+        /* Mini cards */
+        .fe-card-left  { left: 8%;  top: 58%; animation: floatY 6s ease-in-out infinite 0.4s; }
+        .fe-card-right { right: 8%; top: 62%; animation: floatY2 5.5s ease-in-out infinite 0.7s; }
+
+        /* Dots */
+        .fe-dot1 { top: 30%; left: 15%; background: var(--primary); opacity: 0.4; animation-delay: 0s; }
+        .fe-dot2 { top: 55%; left: 12%; background: var(--purple); opacity: 0.35; animation-delay: 0.8s; }
+        .fe-dot3 { top: 25%; right: 14%; background: var(--green); opacity: 0.4; animation-delay: 0.4s; }
+        .fe-dot4 { top: 60%; right: 11%; background: var(--cyan); opacity: 0.35; animation-delay: 1.2s; }
+        .fe-dot5 { bottom: 20%; left: 20%; background: var(--orange); opacity: 0.3; animation-delay: 0.6s; }
+        .fe-dot6 { bottom: 18%; right: 20%; background: var(--primary); opacity: 0.35; animation-delay: 1s; }
+
+        /* Arc decoration */
+        .fe-arc-left {
+            left: 14%; top: 15%;
+            width: 180px; height: 180px;
+            border-radius: 50%;
+            border: 1px dashed rgba(79,142,247,0.12);
+            animation: spin-slow 25s linear infinite;
+        }
+        .fe-arc-right {
+            right: 14%; bottom: 20%;
+            width: 140px; height: 140px;
+            border-radius: 50%;
+            border: 1px dashed rgba(167,139,250,0.12);
+            animation: spin-slow 20s linear infinite reverse;
+        }
+
+        /* ── Hero content ── */
+        .hero-content { position: relative; z-index: 2; }
+
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: var(--bg-elevated); border: 1px solid var(--border-light);
+            color: var(--primary-bright); font-size: 0.8rem; font-weight: 600;
+            padding: 0.38rem 1rem; border-radius: 20px; margin-bottom: 1.75rem;
+            animation: fadeInUp 0.5s ease forwards;
+        }
+        .hero-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: blink 1.5s infinite; }
+
+        .hero-title {
+            font-size: clamp(2.8rem, 7vw, 5.5rem);
+            font-weight: 900; line-height: 1.06; letter-spacing: -0.04em;
+            margin-bottom: 1.5rem; max-width: 860px;
+            animation: fadeInUp 0.6s 0.1s ease both;
+        }
+        .hero-title-gradient {
+            background: linear-gradient(135deg, #60a5fa 0%, #818cf8 50%, #a78bfa 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            animation: gradient-shift 4s ease infinite;
+        }
+        .hero-subtitle {
+            font-size: clamp(1rem, 2vw, 1.18rem); color: var(--text-secondary);
+            max-width: 560px; margin: 0 auto 2.5rem; line-height: 1.75;
+            animation: fadeInUp 0.6s 0.2s ease both;
+        }
+        .hero-actions {
+            display: flex; gap: 0.9rem; flex-wrap: wrap; justify-content: center;
+            margin-bottom: 4rem; animation: fadeInUp 0.6s 0.3s ease both;
+        }
+        .btn-hero-primary {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: #fff; font-weight: 700; font-size: 0.975rem;
+            padding: 0.85rem 2rem; border-radius: 9px;
+            text-decoration: none; border: none; cursor: pointer; font-family: inherit;
+            box-shadow: 0 0 28px rgba(79,142,247,0.35); transition: all 0.3s;
+        }
+        .btn-hero-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 40px rgba(79,142,247,0.5); }
+        .btn-hero-secondary {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: var(--bg-elevated); color: var(--text-primary);
+            font-weight: 600; font-size: 0.975rem;
+            padding: 0.85rem 2rem; border-radius: 9px; text-decoration: none;
+            border: 1px solid var(--border-light); transition: all 0.3s;
+        }
+        .btn-hero-secondary:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); }
+
+        /* ===== MOCKUP ===== */
+        .hero-mockup {
+            position: relative; z-index: 2; width: 100%; max-width: 1050px;
+            animation: fadeInUp 0.8s 0.4s ease both;
+        }
+        .mockup-browser {
+            background: var(--bg-surface); border: 1px solid var(--border-light);
+            border-radius: 14px; overflow: hidden;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.7), 0 0 0 1px var(--border), inset 0 1px 0 rgba(255,255,255,0.04);
+        }
+        .mockup-bar {
+            background: var(--bg-elevated); padding: 0.65rem 1rem;
+            display: flex; align-items: center; gap: 0.65rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .mockup-dots { display: flex; gap: 0.35rem; }
+        .mockup-dot { width: 11px; height: 11px; border-radius: 50%; }
+        .mockup-dot.r { background: #f87171; }
+        .mockup-dot.y { background: #fbbf24; }
+        .mockup-dot.g { background: var(--green); }
+        .mockup-url {
+            flex: 1; background: var(--bg-overlay); border-radius: 5px;
+            padding: 0.27rem 0.8rem; font-size: 0.72rem; color: var(--text-muted);
+            max-width: 280px; margin: 0 auto;
+        }
+        .mockup-body { padding: 1.25rem; }
+        .mockup-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 0.85rem; margin-bottom: 0.85rem; }
+        .mockup-card {
+            background: var(--bg-elevated); border: 1px solid var(--border);
+            border-radius: 9px; padding: 0.85rem;
+        }
+        .mockup-card-label { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem; }
+        .mockup-card-val   { font-size: 1.35rem; font-weight: 800; color: var(--primary-bright); }
+        .mockup-card-badge { font-size: 0.6rem; font-weight: 600; color: var(--green); margin-top: 0.25rem; }
+        .mockup-charts { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; }
+        .mockup-chart {
+            background: var(--bg-elevated); border: 1px solid var(--border);
+            border-radius: 9px; padding: 0.85rem; height: 130px; position: relative; overflow: hidden;
+        }
+        .mockup-chart-title { font-size: 0.67rem; color: var(--text-secondary); margin-bottom: 0.6rem; font-weight: 600; }
+        .mockup-bars { display: flex; align-items: flex-end; gap: 5px; height: 72px; }
+        .mockup-bar-item { flex: 1; border-radius: 3px 3px 0 0; background: linear-gradient(180deg, var(--primary), var(--primary-dark)); opacity: 0.8; }
+        .mockup-line-svg { position: absolute; bottom: 16px; left: 12px; right: 12px; height: 55px; }
+        .mockup-line-svg svg { width: 100%; height: 100%; }
+
+        /* ===== TRUST BAR ===== */
+        .trust-bar {
+            position: relative; z-index: 1;
+            padding: 2rem 2rem;
+            border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+            background: var(--bg-surface); text-align: center;
+        }
+        .trust-bar p { font-size: 0.73rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 1.25rem; font-weight: 600; }
+        .trust-logos { display: flex; align-items: center; justify-content: center; gap: 2.5rem; flex-wrap: wrap; }
+        .trust-logo { font-size: 1rem; font-weight: 700; color: var(--text-muted); letter-spacing: -0.01em; opacity: 0.45; transition: opacity 0.2s; }
+        .trust-logo:hover { opacity: 0.9; }
+
+        /* ===== STATS ===== */
+        .stats-section { position: relative; z-index: 1; max-width: 1280px; margin: 0 auto; padding: 4rem 2rem; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; }
+        .stat-card {
+            background: var(--bg-surface); border: 1px solid var(--border);
+            border-radius: 14px; padding: 1.75rem; text-align: center;
+            position: relative; overflow: hidden; transition: all 0.3s;
+        }
+        .stat-card::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, var(--primary-glow), transparent);
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .stat-card:hover { transform: translateY(-5px); border-color: rgba(79,142,247,0.35); }
+        .stat-card:hover::before { opacity: 1; }
+        .stat-num {
+            font-size: 2.8rem; font-weight: 900; line-height: 1;
+            background: linear-gradient(135deg, var(--text-primary), var(--primary-bright));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            margin-bottom: 0.4rem; animation: number-pop 0.5s ease;
+        }
+        .stat-label { color: var(--text-muted); font-size: 0.82rem; font-weight: 500; }
+
+        /* ===== SECTION HELPERS ===== */
+        section { position: relative; z-index: 1; }
+        .section-inner { max-width: 1280px; margin: 0 auto; padding: 5rem 2rem; }
+        .section-tag {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+            color: var(--primary); background: var(--primary-glow);
+            border: 1px solid rgba(79,142,247,0.22); padding: 0.32rem 0.85rem; border-radius: 20px; margin-bottom: 1.1rem;
+        }
+        .section-title {
+            font-size: clamp(1.9rem, 3.8vw, 2.85rem);
+            font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 0.9rem;
+        }
+        .section-subtitle { color: var(--text-secondary); font-size: 1.05rem; max-width: 540px; line-height: 1.7; }
+        .text-gradient {
+            background: linear-gradient(135deg, var(--primary-bright), var(--purple));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+
+        /* ===== FEATURES ===== */
+        .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-top: 3.5rem; }
+        .feature-card {
+            background: var(--bg-surface); border: 1px solid var(--border);
+            border-radius: 14px; padding: 1.75rem;
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .feature-card::after {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--purple));
+            transform: scaleX(0); transform-origin: left; transition: transform 0.35s;
+        }
+        .feature-card:hover { transform: translateY(-7px); border-color: rgba(79,142,247,0.3); box-shadow: 0 18px 50px rgba(0,0,0,0.35); }
+        .feature-card:hover::after { transform: scaleX(1); }
+        .feature-icon {
+            width: 48px; height: 48px; border-radius: 11px;
+            display: flex; align-items: center; justify-content: center; font-size: 1.3rem; margin-bottom: 1.1rem;
+        }
+        .feature-icon.blue   { background: var(--primary-glow); color: var(--primary-bright); }
+        .feature-icon.purple { background: rgba(167,139,250,0.1); color: var(--purple); }
+        .feature-icon.green  { background: var(--green-glow); color: var(--green); }
+        .feature-icon.orange { background: rgba(251,146,60,0.1); color: var(--orange); }
+        .feature-icon.red    { background: rgba(248,113,113,0.1); color: var(--red); }
+        .feature-icon.cyan   { background: rgba(34,211,238,0.1); color: var(--cyan); }
+        .feature-title { font-size: 1rem; font-weight: 700; margin-bottom: 0.55rem; }
+        .feature-desc  { color: var(--text-secondary); font-size: 0.875rem; line-height: 1.65; }
+
+        /* ===== HOW IT WORKS ===== */
+        .how-section { background: var(--bg-surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+        .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-top: 3.5rem; position: relative; }
+        .steps-grid::before {
+            content: ''; position: absolute; top: 36px;
+            left: calc(16.66% + 1rem); right: calc(16.66% + 1rem); height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary-bright), transparent);
+        }
+        .step-card { text-align: center; padding: 0.75rem; }
+        .step-num {
+            width: 68px; height: 68px; border-radius: 50%;
+            background: var(--bg-elevated); border: 2px solid var(--primary);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem; font-weight: 900; color: var(--primary-bright);
+            margin: 0 auto 1.4rem;
+            box-shadow: 0 0 25px rgba(79,142,247,0.25); position: relative; z-index: 1;
+        }
+        .step-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.65rem; }
+        .step-desc   { color: var(--text-secondary); font-size: 0.875rem; line-height: 1.65; }
+
+        /* ===== HIGHLIGHT STRIP ===== */
+        .highlight-strip {
+            position: relative; z-index: 1;
+            background: linear-gradient(135deg, #0f1c3a 0%, #0d1117 50%, #160f2a 100%);
+            border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+            padding: 3rem 2rem; overflow: hidden;
+        }
+        .highlight-strip-inner {
+            max-width: 1280px; margin: 0 auto;
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; align-items: center;
+        }
+        .highlight-item {
+            display: flex; align-items: center; gap: 1rem; padding: 1rem 2rem;
+            border-right: 1px solid var(--border);
+        }
+        .highlight-item:last-child { border-right: none; }
+        .highlight-icon {
+            width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+        }
+        .highlight-icon.bl { background: var(--primary-glow); color: var(--primary-bright); }
+        .highlight-icon.gr { background: var(--green-glow); color: var(--green); }
+        .highlight-icon.pr { background: rgba(167,139,250,0.1); color: var(--purple); }
+        .highlight-title { font-size: 0.92rem; font-weight: 700; margin-bottom: 0.15rem; }
+        .highlight-desc  { font-size: 0.8rem; color: var(--text-muted); }
+
+        /* ===== CTA ===== */
+        .cta-section { position: relative; overflow: hidden; }
+        .cta-bg { position: absolute; inset: 0; background: linear-gradient(135deg, #0d1b2a 0%, #0a0d14 50%, #140d2a 100%); }
+        .cta-glow {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+            width: 700px; height: 350px;
+            background: radial-gradient(ellipse, rgba(79,142,247,0.1) 0%, transparent 70%);
+        }
+        .cta-inner {
+            position: relative; z-index: 1; max-width: 760px; margin: 0 auto;
+            padding: 7rem 2rem; text-align: center;
+        }
+        .cta-title { font-size: clamp(2rem, 4vw, 3.3rem); font-weight: 900; letter-spacing: -0.03em; margin-bottom: 1.1rem; }
+        .cta-sub   { color: var(--text-secondary); font-size: 1.05rem; margin-bottom: 2.25rem; }
+        .cta-actions { display: flex; gap: 0.9rem; justify-content: center; flex-wrap: wrap; }
+
+        /* ===== FOOTER ===== */
+        footer {
+            position: relative; z-index: 1;
+            border-top: 1px solid var(--border); background: var(--bg-surface);
+            padding: 3.5rem 2rem 2rem;
+        }
+        .footer-inner { max-width: 1280px; margin: 0 auto; }
+        .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 2.5rem; margin-bottom: 2.5rem; }
+
+        /* Footer brand logo */
+        .footer-brand { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1rem; }
+        .footer-logo-box {
+            width: 28px; height: 28px; border-radius: 7px;
+            background: linear-gradient(145deg, #1e40af, #3b82f6);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 12px rgba(59,130,246,0.3);
+        }
+        .footer-logo-box svg { width: 15px; height: 15px; }
+        .footer-brand-name { font-size: 1.05rem; font-weight: 800; color: var(--text-primary); }
+
+        .footer-desc { color: var(--text-muted); font-size: 0.84rem; line-height: 1.7; margin-bottom: 1.25rem; }
+        .footer-social { display: flex; gap: 0.6rem; }
+        .social-btn {
+            width: 34px; height: 34px; border-radius: 7px;
+            background: var(--bg-elevated); border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text-muted); font-size: 0.82rem; text-decoration: none; transition: all 0.2s;
+        }
+        .social-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .footer-col-title { font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-secondary); margin-bottom: 1.1rem; }
+        .footer-links { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
+        .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 0.84rem; transition: color 0.2s; }
+        .footer-links a:hover { color: var(--primary); }
+        .footer-bottom {
+            border-top: 1px solid var(--border); padding-top: 1.75rem;
+            display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+        }
+        .footer-copy { color: var(--text-muted); font-size: 0.78rem; }
+        .footer-tech { display: flex; gap: 0.45rem; flex-wrap: wrap; }
+        .tech-pill {
+            font-size: 0.68rem; font-weight: 600; padding: 0.22rem 0.55rem; border-radius: 20px;
+            border: 1px solid var(--border); color: var(--text-muted); background: var(--bg-elevated);
+        }
+
+        /* ===== FLASH ===== */
+        .flash-wrap { position: fixed; top: 75px; right: 18px; z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem; }
+        .flash-msg {
+            padding: 0.85rem 1.1rem; border-radius: 9px; font-size: 0.86rem; font-weight: 500;
+            display: flex; align-items: center; gap: 0.5rem;
+            animation: fadeInUp 0.3s ease; box-shadow: 0 8px 28px rgba(0,0,0,0.5); min-width: 280px;
+        }
+        .flash-success { background: rgba(6,35,25,0.95); border: 1px solid rgba(52,211,153,0.4); color: var(--green); }
+        .flash-error   { background: rgba(35,6,6,0.95);  border: 1px solid rgba(248,113,113,0.4); color: var(--red); }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .features-grid { grid-template-columns: repeat(2,1fr); }
+            .footer-top { grid-template-columns: 1fr 1fr; }
+            .stats-grid { grid-template-columns: repeat(2,1fr); }
+            .highlight-strip-inner { grid-template-columns: 1fr; }
+            .highlight-item { border-right: none; border-bottom: 1px solid var(--border); }
+            .highlight-item:last-child { border-bottom: none; }
+            .fe-arc-left, .fe-arc-right { display: none; }
+        }
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero-title { font-size: 2.4rem; }
+            .features-grid, .steps-grid { grid-template-columns: 1fr; }
+            .steps-grid::before { display: none; }
+            .footer-top { grid-template-columns: 1fr; gap: 1.75rem; }
+            .mockup-grid { grid-template-columns: repeat(2,1fr); }
+            .mockup-charts { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .cta-actions { flex-direction: column; align-items: center; }
+            /* Hide side floats on mobile */
+            .fe-phone,.fe-brain,.fe-activity,.fe-user,.fe-shield,.fe-chat,
+            .fe-card-left,.fe-card-right,.fe-arc-left,.fe-arc-right { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- BG -->
+<div class="bg-grid"></div>
+<div class="bg-glow-1"></div>
+<div class="bg-glow-2"></div>
+
+<!-- FLASH -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-wrap">
+      {% for category, message in messages %}
+        <div class="flash-msg flash-{{ category }}">
+          <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-circle' }}"></i>
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<!-- NAVBAR -->
+<nav id="navbar">
+    <div class="nav-inner">
+        <!-- Logo matching Image 1 -->
+        <a href="/" class="nav-brand">
+            <div class="nav-logo-box">
+                <!-- Diamond SVG (same as Image 1) -->
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 8L12 4L19 8L12 20L5 8Z" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.6)" stroke-width="1"/>
+                    <path d="M5 8H19" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
+                    <path d="M8 8L12 4L16 8L12 14L8 8Z" fill="rgba(255,255,255,0.55)"/>
+                </svg>
+            </div>
+            <span class="nav-brand-name">DataSphere</span>
+            <span class="nav-badge">Enterprise</span>
+        </a>
+
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#how-it-works">How It Works</a>
+            <a href="#stats">Analytics</a>
+        </div>
+        <div class="nav-actions">
+            <a href="/login" class="btn-ghost">Sign In</a>
+            <a href="/register" class="btn-primary-nav">Get Started Free</a>
+        </div>
+    </div>
+</nav>
+
+<!-- ═══════════════════════════════════════ HERO ═══ -->
+<section class="hero">
+
+    <!-- ── FLOATING ELEMENTS (Image 3 style) ── -->
+
+    <!-- Left side icons -->
+    <div class="floating-elem fe-phone">
+        <div class="float-icon blue" style="position:relative;">
+            <div class="pulse-ring"></div>
+            <i class="fas fa-chart-line"></i>
+        </div>
+    </div>
+    <div class="floating-elem fe-brain">
+        <div class="float-icon purple">
+            <i class="fas fa-brain"></i>
+        </div>
+    </div>
+    <div class="floating-elem fe-activity">
+        <div class="float-icon cyan">
+            <i class="fas fa-wave-square"></i>
+        </div>
+    </div>
+
+    <!-- Right side icons -->
+    <div class="floating-elem fe-user">
+        <div class="float-icon green" style="position:relative;">
+            <div class="pulse-ring" style="animation-delay:0.5s; border-color:rgba(52,211,153,0.25);"></div>
+            <i class="fas fa-database"></i>
+        </div>
+    </div>
+    <div class="floating-elem fe-shield">
+        <div class="float-icon orange">
+            <i class="fas fa-shield-halved"></i>
+        </div>
+    </div>
+    <div class="floating-elem fe-chat">
+        <div class="float-icon blue">
+            <i class="fas fa-comments"></i>
+        </div>
+    </div>
+
+    <!-- Mini floating data cards -->
+    <div class="floating-elem fe-card-left">
+        <div class="float-card">
+            <div class="float-card-title">Revenue</div>
+            <div class="float-card-value" style="color:#60a5fa;">$2.4M</div>
+            <div class="float-card-badge">↑ 18.2% this month</div>
+        </div>
+    </div>
+    <div class="floating-elem fe-card-right">
+        <div class="float-card">
+            <div class="float-card-title">Data Processed</div>
+            <div class="float-card-value" style="color:#a78bfa;">1.2M rows</div>
+            <div class="float-card-badge">↑ Analysed in 2.3s</div>
+        </div>
+    </div>
+
+    <!-- Spinning circles -->
+    <div class="floating-elem fe-arc-left"></div>
+    <div class="floating-elem fe-arc-right"></div>
+
+    <!-- Dots -->
+    <div class="floating-elem float-dot fe-dot1"></div>
+    <div class="floating-elem float-dot fe-dot2"></div>
+    <div class="floating-elem float-dot fe-dot3"></div>
+    <div class="floating-elem float-dot fe-dot4"></div>
+    <div class="floating-elem float-dot fe-dot5"></div>
+    <div class="floating-elem float-dot fe-dot6"></div>
+
+    <!-- ── HERO TEXT (keep exactly as-is per Image 2) ── -->
+    <div class="hero-content">
+        <div class="hero-badge">
+            <span class="hero-badge-dot"></span>
+            <span>Trusted by 10,000+ Enterprises Worldwide</span>
+            <i class="fas fa-arrow-right" style="font-size:0.62rem;"></i>
+        </div>
+
+        <h1 class="hero-title">
+            Turn Raw Data Into<br>
+            <span class="hero-title-gradient">Actionable Intelligence</span>
+        </h1>
+
+        <p class="hero-subtitle">
+            The most powerful enterprise analytics platform. Upload your data, get instant AI-powered insights, and make decisions with confidence — no code required.
+        </p>
+
+        <div class="hero-actions">
+            <a href="/register" class="btn-hero-primary">
+                <i class="fas fa-rocket"></i>
+                Start Analysing Free
+            </a>
+            <a href="#how-it-works" class="btn-hero-secondary">
+                <i class="fas fa-play-circle"></i>
+                See How It Works
+            </a>
+        </div>
+
+        <!-- Dashboard Mockup -->
+        <div class="hero-mockup">
+            <div class="mockup-browser">
+                <div class="mockup-bar">
+                    <div class="mockup-dots">
+                        <div class="mockup-dot r"></div>
+                        <div class="mockup-dot y"></div>
+                        <div class="mockup-dot g"></div>
+                    </div>
+                    <div class="mockup-url">datasphere.app/dashboard</div>
+                </div>
+                <div class="mockup-body">
+                    <div class="mockup-grid">
+                        <div class="mockup-card">
+                            <div class="mockup-card-label">Total Revenue</div>
+                            <div class="mockup-card-val">$2.4M</div>
+                            <div class="mockup-card-badge">↑ 18.2%</div>
+                        </div>
+                        <div class="mockup-card">
+                            <div class="mockup-card-label">Active Users</div>
+                            <div class="mockup-card-val">84.3K</div>
+                            <div class="mockup-card-badge">↑ 12.5%</div>
+                        </div>
+                        <div class="mockup-card">
+                            <div class="mockup-card-label">Conversion</div>
+                            <div class="mockup-card-val">6.8%</div>
+                            <div class="mockup-card-badge">↑ 2.1%</div>
+                        </div>
+                        <div class="mockup-card">
+                            <div class="mockup-card-label">Data Points</div>
+                            <div class="mockup-card-val">1.2M</div>
+                            <div class="mockup-card-badge">↑ 34.7%</div>
+                        </div>
+                    </div>
+                    <div class="mockup-charts">
+                        <div class="mockup-chart">
+                            <div class="mockup-chart-title"><i class="fas fa-chart-bar" style="color:#60a5fa;margin-right:5px;"></i>Revenue by Month</div>
+                            <div class="mockup-bars">
+                                <div class="mockup-bar-item" style="height:40%"></div>
+                                <div class="mockup-bar-item" style="height:60%"></div>
+                                <div class="mockup-bar-item" style="height:50%"></div>
+                                <div class="mockup-bar-item" style="height:80%"></div>
+                                <div class="mockup-bar-item" style="height:65%"></div>
+                                <div class="mockup-bar-item" style="height:90%"></div>
+                                <div class="mockup-bar-item" style="height:75%"></div>
+                                <div class="mockup-bar-item" style="height:100%"></div>
+                            </div>
+                        </div>
+                        <div class="mockup-chart">
+                            <div class="mockup-chart-title"><i class="fas fa-chart-line" style="color:#a78bfa;margin-right:5px;"></i>User Growth Trend</div>
+                            <div class="mockup-line-svg">
+                                <svg viewBox="0 0 300 55" preserveAspectRatio="none">
+                                    <defs>
+                                        <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="0%" stop-color="#a78bfa" stop-opacity="0.28"/>
+                                            <stop offset="100%" stop-color="#a78bfa" stop-opacity="0"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <path d="M0,52 C30,47 60,38 90,32 C120,26 150,17 180,14 C210,11 240,6 300,2"
+                                          stroke="#a78bfa" stroke-width="2.5" fill="none"/>
+                                    <path d="M0,52 C30,47 60,38 90,32 C120,26 150,17 180,14 C210,11 240,6 300,2 L300,55 L0,55 Z"
+                                          fill="url(#lineGrad)"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+    <p>Trusted by teams at</p>
+    <div class="trust-logos">
+        <span class="trust-logo">ENTERPRISE CO.</span>
+        <span class="trust-logo">FINTECH PRO</span>
+        <span class="trust-logo">DATAWORKS</span>
+        <span class="trust-logo">ANALYTIQ</span>
+        <span class="trust-logo">NEXGEN AI</span>
+        <span class="trust-logo">CLOUDBASE</span>
+    </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-section" id="stats">
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-num">10K+</div>
+            <div class="stat-label">Enterprise Users</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-num">500M+</div>
+            <div class="stat-label">Data Rows Processed</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-num">99.9%</div>
+            <div class="stat-label">Uptime SLA</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-num">2.3s</div>
+            <div class="stat-label">Average Load Time</div>
+        </div>
+    </div>
+</div>
+
+<!-- HIGHLIGHT STRIP -->
+<div class="highlight-strip">
+    <div class="highlight-strip-inner">
+        <div class="highlight-item">
+            <div class="highlight-icon bl"><i class="fas fa-bolt"></i></div>
+            <div>
+                <div class="highlight-title">Instant Analysis</div>
+                <div class="highlight-desc">Upload & get insights in under 3 seconds</div>
+            </div>
+        </div>
+        <div class="highlight-item">
+            <div class="highlight-icon gr"><i class="fas fa-lock"></i></div>
+            <div>
+                <div class="highlight-title">Bank-Grade Security</div>
+                <div class="highlight-desc">SHA-256 encryption, zero data sharing</div>
+            </div>
+        </div>
+        <div class="highlight-item">
+            <div class="highlight-icon pr"><i class="fas fa-brain"></i></div>
+            <div>
+                <div class="highlight-title">AI-Powered Insights</div>
+                <div class="highlight-desc">Automated trend, outlier & correlation detection</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features">
+    <div class="section-inner">
+        <div style="text-align:center; max-width:660px; margin:0 auto;">
+            <div class="section-tag"><i class="fas fa-sparkles"></i> Platform Features</div>
+            <h2 class="section-title">Everything you need to<br><span class="text-gradient">master your data</span></h2>
+            <p class="section-subtitle">A complete analytics suite with AI, real-time processing, and enterprise-grade security — all in one platform.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon blue"><i class="fas fa-brain"></i></div>
+                <h3 class="feature-title">AI-Powered Insights</h3>
+                <p class="feature-desc">Automatically detect trends, anomalies, correlations, and patterns using machine learning — no data science expertise required.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon purple"><i class="fas fa-chart-mixed"></i></div>
+                <h3 class="feature-title">Interactive Visualizations</h3>
+                <p class="feature-desc">Build stunning charts, heatmaps, scatter plots, and time-series graphs with a drag-and-drop chart builder. Fully interactive.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon green"><i class="fas fa-file-import"></i></div>
+                <h3 class="feature-title">Universal Data Import</h3>
+                <p class="feature-desc">Upload CSV, Excel (XLSX, XLS) files instantly. Auto-detects column types, handles missing data, and cleans your dataset.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon orange"><i class="fas fa-table-columns"></i></div>
+                <h3 class="feature-title">KPI Dashboard</h3>
+                <p class="feature-desc">Track your most important metrics with real-time KPI cards. Set targets, monitor trends, and get instant performance snapshots.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon red"><i class="fas fa-shield-halved"></i></div>
+                <h3 class="feature-title">Enterprise Security</h3>
+                <p class="feature-desc">Bank-grade security with encrypted storage, user authentication, and role-based access control. Your data stays yours.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon cyan"><i class="fas fa-file-arrow-down"></i></div>
+                <h3 class="feature-title">One-Click Export</h3>
+                <p class="feature-desc">Export your processed data, reports, and visualizations to Excel, CSV, and PDF formats with a single click.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how-it-works" class="how-section">
+    <div class="section-inner">
+        <div style="text-align:center; max-width:660px; margin:0 auto;">
+            <div class="section-tag"><i class="fas fa-list-ol"></i> Simple Process</div>
+            <h2 class="section-title">Up and running in<br><span class="text-gradient">3 simple steps</span></h2>
+            <p class="section-subtitle">No setup. No code. No complexity. Just powerful analytics at your fingertips.</p>
+        </div>
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-num">1</div>
+                <h3 class="step-title">Create Your Account</h3>
+                <p class="step-desc">Sign up in 30 seconds. No credit card required. Free tier includes full platform access with generous data limits.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-num">2</div>
+                <h3 class="step-title">Upload Your Data</h3>
+                <p class="step-desc">Drag and drop your CSV or Excel file. Our engine automatically profiles your data, detects types, and prepares it for analysis.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-num">3</div>
+                <h3 class="step-title">Explore & Decide</h3>
+                <p class="step-desc">Get instant AI insights, interactive charts, and statistical summaries. Share reports or export results with your team.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+    <div class="cta-bg"></div>
+    <div class="cta-glow"></div>
+    <div class="cta-inner">
+        <div class="section-tag" style="margin-bottom:1.4rem; display:inline-flex;">
+            <i class="fas fa-rocket"></i> Start Today — It's Free
+        </div>
+        <h2 class="cta-title">Ready to unlock the<br><span class="text-gradient">power of your data?</span></h2>
+        <p class="cta-sub">Join thousands of professionals who use DataSphere to make smarter, faster decisions every day.</p>
+        <div class="cta-actions">
+            <a href="/register" class="btn-hero-primary">
+                <i class="fas fa-user-plus"></i> Create Free Account
+            </a>
+            <a href="/login" class="btn-hero-secondary">
+                <i class="fas fa-sign-in-alt"></i> Sign In to Dashboard
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-inner">
+        <div class="footer-top">
+            <div>
+                <div class="footer-brand">
+                    <div class="footer-logo-box">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M5 8L12 4L19 8L12 20L5 8Z" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
+                            <path d="M5 8H19" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+                            <path d="M8 8L12 4L16 8L12 14L8 8Z" fill="rgba(255,255,255,0.5)"/>
+                        </svg>
+                    </div>
+                    <span class="footer-brand-name">DataSphere</span>
+                </div>
+                <p class="footer-desc">The enterprise analytics platform that transforms raw data into strategic advantage. Built for professionals who need answers now.</p>
+                <div class="footer-social">
+                    <a href="#" class="social-btn"><i class="fab fa-github"></i></a>
+                    <a href="#" class="social-btn"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-btn"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            <div>
+                <p class="footer-col-title">Product</p>
+                <ul class="footer-links">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#how-it-works">How It Works</a></li>
+                    <li><a href="/register">Get Started</a></li>
+                    <li><a href="/login">Sign In</a></li>
+                </ul>
+            </div>
+            <div>
+                <p class="footer-col-title">Platform</p>
+                <ul class="footer-links">
+                    <li><a href="#">Analytics</a></li>
+                    <li><a href="#">Visualizations</a></li>
+                    <li><a href="#">AI Insights</a></li>
+                    <li><a href="#">Data Export</a></li>
+                </ul>
+            </div>
+            <div>
+                <p class="footer-col-title">Company</p>
+                <ul class="footer-links">
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span class="footer-copy">&copy; 2024 DataSphere Analytics. All rights reserved.</span>
+            <div class="footer-tech">
+                <span class="tech-pill">Python</span>
+                <span class="tech-pill">Dash</span>
+                <span class="tech-pill">Plotly</span>
+                <span class="tech-pill">SQLite3</span>
+                <span class="tech-pill">Flask</span>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Navbar scroll
+    window.addEventListener('scroll', () => {
+        document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    // Auto-dismiss flash
+    setTimeout(() => {
+        const f = document.querySelector('.flash-wrap');
+        if (f) { f.style.transition = 'opacity 0.5s'; f.style.opacity = '0'; setTimeout(() => f.remove(), 500); }
+    }, 4500);
+
+    // Scroll-reveal for cards
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                e.target.style.opacity = '1';
+                e.target.style.transform = 'translateY(0)';
+                observer.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.08 });
+
+    document.querySelectorAll('.feature-card, .step-card, .stat-card, .highlight-item').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(28px)';
+        el.style.transition = 'opacity 0.55s ease, transform 0.55s ease';
+        observer.observe(el);
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In — DataSphere Analytics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        :root {
+            --bg-base:    #0d1117;
+            --bg-surface: #161b22;
+            --bg-elevated:#21262d;
+            --primary:    #58a6ff;
+            --primary-dark:#1f6feb;
+            --primary-glow:rgba(88,166,255,0.18);
+            --green:      #3fb950;
+            --red:        #f85149;
+            --border:     #30363d;
+            --text-primary:#e6edf3;
+            --text-secondary:#8b949e;
+            --text-muted: #484f58;
+        }
+        html { scroll-behavior:smooth; }
+        body {
+            font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+            background:var(--bg-base);
+            color:var(--text-primary);
+            min-height:100vh;
+            display:flex; flex-direction:column;
+            -webkit-font-smoothing:antialiased;
+        }
+
+        /* GRID BG */
+        .bg-grid {
+            position:fixed; inset:0;
+            background-image: linear-gradient(#21262d 1px,transparent 1px), linear-gradient(90deg,#21262d 1px,transparent 1px);
+            background-size:50px 50px; opacity:0.25; pointer-events:none; z-index:0;
+        }
+        .bg-glow {
+            position:fixed; top:-200px; right:-100px;
+            width:600px; height:600px;
+            background:radial-gradient(circle,rgba(88,166,255,0.07) 0%,transparent 70%);
+            pointer-events:none; z-index:0;
+        }
+
+        /* NAVBAR */
+        nav {
+            position:relative; z-index:10;
+            padding:1rem 2rem;
+            border-bottom:1px solid var(--border);
+            background:rgba(13,17,23,0.9);
+            backdrop-filter:blur(12px);
+        }
+        .nav-inner {
+            max-width:1200px; margin:0 auto;
+            display:flex; align-items:center; justify-content:space-between;
+        }
+        .nav-brand {
+            display:flex; align-items:center; gap:0.6rem; text-decoration:none;
+        }
+        .brand-icon {
+            width:32px; height:32px; border-radius:7px;
+            background:linear-gradient(135deg, var(--primary-dark), var(--primary));
+            display:flex; align-items:center; justify-content:center;
+            font-size:0.9rem; color:#fff;
+            box-shadow:0 0 15px var(--primary-glow);
+        }
+        .brand-name {
+            font-size:1.15rem; font-weight:800;
+            background:linear-gradient(135deg,#e6edf3,var(--primary));
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+        }
+        .nav-link {
+            color:var(--text-secondary); text-decoration:none; font-size:0.875rem;
+            font-weight:500; display:flex; align-items:center; gap:0.4rem;
+            padding:0.4rem 0.8rem; border-radius:6px; transition:all 0.2s;
+        }
+        .nav-link:hover { color:var(--primary); background:var(--primary-glow); }
+
+        /* MAIN */
+        main {
+            flex:1; position:relative; z-index:1;
+            display:flex; align-items:center; justify-content:center;
+            padding:3rem 1.5rem;
+        }
+        .auth-wrapper { width:100%; max-width:440px; }
+
+        /* CARD */
+        .auth-card {
+            background:var(--bg-surface);
+            border:1px solid var(--border);
+            border-radius:16px; padding:2.5rem;
+            box-shadow:0 25px 80px rgba(0,0,0,0.5);
+            animation:fadeInUp 0.5s ease;
+        }
+        @keyframes fadeInUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+
+        .auth-icon {
+            width:60px; height:60px; border-radius:14px; margin:0 auto 1.5rem;
+            background:linear-gradient(135deg,var(--primary-dark),var(--primary));
+            display:flex; align-items:center; justify-content:center;
+            font-size:1.5rem; color:#fff;
+            box-shadow:0 0 30px var(--primary-glow);
+        }
+        .auth-title {
+            font-size:1.65rem; font-weight:800; letter-spacing:-0.02em;
+            text-align:center; margin-bottom:0.5rem;
+        }
+        .auth-subtitle { color:var(--text-secondary); font-size:0.9rem; text-align:center; margin-bottom:2rem; }
+
+        /* ALERTS */
+        .alert {
+            padding:0.85rem 1rem; border-radius:10px;
+            font-size:0.875rem; font-weight:500;
+            display:flex; align-items:center; gap:0.5rem;
+            margin-bottom:1.25rem;
+        }
+        .alert-error   { background:rgba(248,81,73,0.1); border:1px solid rgba(248,81,73,0.3); color:var(--red); }
+        .alert-success { background:rgba(63,185,80,0.1); border:1px solid rgba(63,185,80,0.3); color:var(--green); }
+
+        /* FORM */
+        .form-group { margin-bottom:1.25rem; }
+        .form-label {
+            display:block; font-size:0.8rem; font-weight:600;
+            color:var(--text-secondary); margin-bottom:0.5rem;
+            text-transform:uppercase; letter-spacing:0.05em;
+        }
+        .input-wrapper { position:relative; }
+        .input-icon {
+            position:absolute; left:14px; top:50%; transform:translateY(-50%);
+            color:var(--text-muted); font-size:0.9rem; pointer-events:none;
+            transition:color 0.2s;
+        }
+        .form-control {
+            width:100%; background:var(--bg-elevated);
+            border:1px solid var(--border); border-radius:10px;
+            padding:0.8rem 1rem 0.8rem 2.75rem;
+            color:var(--text-primary); font-family:inherit; font-size:0.9rem;
+            outline:none; transition:all 0.2s;
+        }
+        .form-control:focus {
+            border-color:var(--primary);
+            box-shadow:0 0 0 3px var(--primary-glow);
+        }
+        .form-control:focus + .input-icon,
+        .input-wrapper:focus-within .input-icon { color:var(--primary); }
+        .form-control::placeholder { color:var(--text-muted); }
+
+        /* Password toggle */
+        .pwd-toggle {
+            position:absolute; right:12px; top:50%; transform:translateY(-50%);
+            background:none; border:none; color:var(--text-muted);
+            cursor:pointer; font-size:0.9rem; padding:4px; transition:color 0.2s;
+        }
+        .pwd-toggle:hover { color:var(--primary); }
+
+        /* Forgot password */
+        .form-extras {
+            display:flex; align-items:center; justify-content:space-between;
+            margin-bottom:1.5rem; font-size:0.8rem;
+        }
+        .checkbox-label {
+            display:flex; align-items:center; gap:0.5rem;
+            color:var(--text-secondary); cursor:pointer;
+        }
+        .checkbox-label input[type="checkbox"] { accent-color:var(--primary); width:14px; height:14px; }
+        .forgot-link { color:var(--primary); text-decoration:none; transition:opacity 0.2s; }
+        .forgot-link:hover { opacity:0.7; }
+
+        /* SUBMIT BUTTON */
+        .btn-submit {
+            width:100%; padding:0.9rem;
+            background:linear-gradient(135deg,var(--primary-dark),var(--primary));
+            border:none; border-radius:10px;
+            color:#fff; font-family:inherit; font-size:0.95rem; font-weight:700;
+            cursor:pointer; transition:all 0.3s;
+            box-shadow:0 0 25px var(--primary-glow);
+            display:flex; align-items:center; justify-content:center; gap:0.5rem;
+            letter-spacing:0.01em;
+        }
+        .btn-submit:hover { transform:translateY(-2px); box-shadow:0 6px 40px var(--primary-glow); }
+        .btn-submit:active { transform:translateY(0); }
+
+        /* DIVIDER */
+        .divider {
+            display:flex; align-items:center; gap:1rem;
+            margin:1.5rem 0; color:var(--text-muted); font-size:0.8rem;
+        }
+        .divider::before, .divider::after {
+            content:''; flex:1; height:1px; background:var(--border);
+        }
+
+        /* BOTTOM LINK */
+        .auth-footer { text-align:center; margin-top:1.5rem; font-size:0.875rem; color:var(--text-secondary); }
+        .auth-footer a { color:var(--primary); text-decoration:none; font-weight:600; }
+        .auth-footer a:hover { text-decoration:underline; }
+
+        /* SECURITY BADGE */
+        .security-note {
+            display:flex; align-items:center; justify-content:center; gap:0.4rem;
+            margin-top:1.5rem; color:var(--text-muted); font-size:0.75rem;
+        }
+        .security-note i { color:var(--green); }
+
+        /* FOOTER */
+        footer {
+            position:relative; z-index:1;
+            text-align:center; padding:1.5rem;
+            border-top:1px solid var(--border);
+            color:var(--text-muted); font-size:0.78rem;
+        }
+        footer a { color:var(--text-muted); text-decoration:none; }
+        footer a:hover { color:var(--primary); }
+    </style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<!-- NAV -->
+<nav>
+    <div class="nav-inner">
+        <a href="/" class="nav-brand">
+            <div class="brand-icon"><i class="fas fa-chart-network"></i></div>
+            <span class="brand-name">DataSphere</span>
+        </a>
+        <a href="/register" class="nav-link">
+            <i class="fas fa-user-plus"></i> Create Account
+        </a>
+    </div>
+</nav>
+
+<!-- MAIN -->
+<main>
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <div class="auth-icon"><i class="fas fa-sign-in-alt"></i></div>
+            <h1 class="auth-title">Welcome Back</h1>
+            <p class="auth-subtitle">Sign in to your DataSphere account to continue</p>
+
+            <!-- Error/Success Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="alert alert-{{ 'error' if category == 'error' else 'success' }}">
+                    <i class="fas fa-{{ 'times-circle' if category == 'error' else 'check-circle' }}"></i>
+                    {{ message }}
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="/login" id="loginForm">
+                <!-- Username/Email -->
+                <div class="form-group">
+                    <label class="form-label" for="identifier">Username or Email</label>
+                    <div class="input-wrapper">
+                        <input
+                            type="text" id="identifier" name="identifier"
+                            class="form-control"
+                            placeholder="Enter your username or email"
+                            required autocomplete="username"
+                            value="{{ request.form.get('identifier', '') }}"
+                        >
+                        <i class="fas fa-user input-icon"></i>
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div class="form-group">
+                    <label class="form-label" for="password">Password</label>
+                    <div class="input-wrapper">
+                        <input
+                            type="password" id="password" name="password"
+                            class="form-control"
+                            placeholder="Enter your password"
+                            required autocomplete="current-password"
+                        >
+                        <i class="fas fa-lock input-icon"></i>
+                        <button type="button" class="pwd-toggle" onclick="togglePwd('password', this)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Extras -->
+                <div class="form-extras">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="remember"> Remember me
+                    </label>
+                    <a href="#" class="forgot-link">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-arrow-right-to-bracket"></i>
+                    Sign In to Dashboard
+                </button>
+            </form>
+
+            <div class="divider">or</div>
+
+            <div class="auth-footer">
+                Don't have an account? <a href="/register">Create one free</a>
+            </div>
+
+            <div class="security-note">
+                <i class="fas fa-shield-halved"></i>
+                Secured with SHA-256 encryption
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer>
+    &copy; 2024 DataSphere Analytics &nbsp;·&nbsp;
+    <a href="#">Privacy</a> &nbsp;·&nbsp;
+    <a href="#">Terms</a>
+</footer>
+
+<script>
+function togglePwd(fieldId, btn) {
+    const field = document.getElementById(fieldId);
+    const icon = btn.querySelector('i');
+    if (field.type === 'password') {
+        field.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+        field.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+    }
+}
+// Input focus effect
+document.querySelectorAll('.form-control').forEach(input => {
+    input.addEventListener('focus', function() {
+        this.closest('.input-wrapper').querySelector('.input-icon').style.color = '#58a6ff';
+    });
+    input.addEventListener('blur', function() {
+        this.closest('.input-wrapper').querySelector('.input-icon').style.color = '#484f58';
+    });
+});
+</script>
+</body>
+</html>
