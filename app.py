@@ -1294,21 +1294,41 @@ app.index_string = '''
             }
 
             @media (max-width: 768px) {
-                .ds-hero { padding: 2rem 1rem; min-height: auto; }
-                .ds-hero-title { font-size: 1.75rem; }
-                .ds-kpi-value { font-size: 1.5rem; }
-                .ds-navbar { padding: 0 1rem; }
+                .container-fluid { padding: 0 0.85rem !important; }
+                .ds-hero { padding: 2rem 1rem 1.5rem; min-height: auto; }
+                .ds-hero-title { font-size: 1.65rem; }
+                .ds-hero-subtitle { font-size: 0.88rem; margin-bottom: 1.25rem; }
+                .ds-upload-zone { padding: 2rem 1rem !important; }
+                .ds-upload-icon-wrap { width: 60px !important; height: 60px !important; font-size: 1.6rem !important; margin-bottom: 1rem !important; }
+                .ds-upload-title { font-size: 1.1rem !important; }
+                .ds-kpi-value { font-size: 1.45rem; }
+                .ds-navbar { padding: 0 0.85rem; }
                 .ds-datetime { display: none; }
+                .ds-btn span { display: none; }
+                #settings-btn, #help-btn { display: none; }
+                .nav-tabs { flex-wrap: nowrap !important; overflow-x: auto !important; overflow-y: hidden !important; -webkit-overflow-scrolling: touch !important; padding-bottom: 2px !important; }
+                .nav-tabs .nav-link { white-space: nowrap !important; font-size: 0.82rem !important; padding: 0.45rem 0.75rem !important; }
+                .chart-container { padding: 1rem 0.65rem !important; }
+                .ds-info-banner { gap: 0.75rem !important; padding: 0.75rem 1rem !important; }
+                .ds-info-banner-item { min-width: 45%; }
             }
 
             @media (max-width: 480px) {
-                .ds-btn span { display: none; }
+                .container-fluid { padding: 0 0.5rem !important; }
+                .ds-navbar { height: 56px; }
+                .ds-brand-name { font-size: 1.05rem; }
+                .ds-version-badge { display: none; }
+                .ds-btn { padding: 5px 8px; }
+                .ds-kpi-card { padding: 1rem; }
+                .ds-kpi-value { font-size: 1.3rem; }
+                .ds-info-banner-item { min-width: 100%; }
+                .toast { min-width: 280px; right: 10px; top: 65px; }
             }
 
             /* ============================================================
                MISC OVERRIDES
             ============================================================ */
-            .container-fluid { max-width: 1600px; margin: 0 auto; padding: 0 2rem; }
+            .container-fluid { max-width: 1600px; margin: 0 auto; padding: 0 1.5rem; }
 
             /* Bootstrap override — dark dropdowns */
             .dropdown-menu {
@@ -2376,7 +2396,7 @@ def toggle_sections(stored_data):
         )
     return (
         {"display": "flex", "flexDirection": "column", "alignItems": "center",
-         "justifyContent": "center", "minHeight": "calc(100vh - 64px)", "padding": "4rem 2rem"},
+         "justifyContent": "center"},
         {"display": "none"},
         {"display": "none"},
         "No file loaded"

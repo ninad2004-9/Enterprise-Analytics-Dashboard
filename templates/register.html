@@ -9,212 +9,150 @@
     <style>
         *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
         :root {
-            --bg-base:     #0d1117;
-            --bg-surface:  #161b22;
-            --bg-elevated: #21262d;
-            --primary:     #58a6ff;
-            --primary-dark:#1f6feb;
-            --primary-glow:rgba(88,166,255,0.18);
-            --green:       #3fb950;
-            --green-glow:  rgba(63,185,80,0.12);
-            --red:         #f85149;
-            --orange:      #ffa657;
-            --border:      #30363d;
-            --text-primary:#e6edf3;
-            --text-secondary:#8b949e;
-            --text-muted:  #484f58;
+            --bg-base:#0a0d14; --bg-surface:#111827; --bg-elevated:#1a2234; --bg-overlay:#243048;
+            --primary:#4f8ef7; --primary-dark:#2563eb; --primary-glow:rgba(79,142,247,.15); --primary-bright:#60a5fa;
+            --green:#34d399; --green-glow:rgba(52,211,153,.1); --red:#f87171; --orange:#fb923c;
+            --border:#1e293b; --border-light:#263352; --text-primary:#f1f5f9; --text-secondary:#94a3b8; --text-muted:#64748b;
         }
         html { scroll-behavior:smooth; }
         body {
             font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
             background:var(--bg-base); color:var(--text-primary);
             min-height:100vh; display:flex; flex-direction:column;
-            -webkit-font-smoothing:antialiased;
+            -webkit-font-smoothing:antialiased; overflow-x:hidden;
         }
+        @keyframes fadeInUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
         .bg-grid {
-            position:fixed; inset:0;
-            background-image:linear-gradient(#21262d 1px,transparent 1px),linear-gradient(90deg,#21262d 1px,transparent 1px);
-            background-size:50px 50px; opacity:0.25; pointer-events:none; z-index:0;
+            position:fixed; inset:0; pointer-events:none; z-index:0;
+            background-image:linear-gradient(rgba(30,41,59,.3) 1px,transparent 1px),linear-gradient(90deg,rgba(30,41,59,.3) 1px,transparent 1px);
+            background-size:56px 56px;
         }
-        .bg-glow {
-            position:fixed; bottom:-200px; left:-100px;
-            width:600px; height:600px;
-            background:radial-gradient(circle,rgba(63,185,80,0.06) 0%,transparent 70%);
-            pointer-events:none; z-index:0;
-        }
+        .bg-glow-1 { position:fixed; bottom:-180px; left:-100px; width:500px; height:500px; background:radial-gradient(circle,rgba(52,211,153,.05) 0%,transparent 65%); pointer-events:none; z-index:0; border-radius:50%; }
 
         /* NAV */
-        nav {
-            position:relative; z-index:10;
-            padding:1rem 2rem; border-bottom:1px solid var(--border);
-            background:rgba(13,17,23,0.9); backdrop-filter:blur(12px);
-        }
+        nav { position:relative; z-index:10; padding:.8rem 1.25rem; border-bottom:1px solid var(--border); background:rgba(10,13,20,.9); backdrop-filter:blur(14px); }
         .nav-inner { max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; }
-        .nav-brand { display:flex; align-items:center; gap:0.6rem; text-decoration:none; }
-        .brand-icon {
-            width:32px; height:32px; border-radius:7px;
-            background:linear-gradient(135deg,var(--primary-dark),var(--primary));
-            display:flex; align-items:center; justify-content:center;
-            font-size:0.9rem; color:#fff; box-shadow:0 0 15px var(--primary-glow);
-        }
-        .brand-name {
-            font-size:1.15rem; font-weight:800;
-            background:linear-gradient(135deg,#e6edf3,var(--primary));
-            -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
-        }
-        .nav-link {
-            color:var(--text-secondary); text-decoration:none; font-size:0.875rem;
-            font-weight:500; display:flex; align-items:center; gap:0.4rem;
-            padding:0.4rem 0.8rem; border-radius:6px; transition:all 0.2s;
-        }
+        .nav-brand { display:flex; align-items:center; gap:.55rem; text-decoration:none; }
+        .brand-icon { width:30px; height:30px; border-radius:7px; background:linear-gradient(145deg,#1e40af,#3b82f6,#60a5fa); display:flex; align-items:center; justify-content:center; box-shadow:0 0 14px rgba(59,130,246,.38); flex-shrink:0; }
+        .brand-icon svg { width:16px; height:16px; }
+        .brand-name { font-size:1.08rem; font-weight:800; letter-spacing:-.02em; color:var(--text-primary); }
+        .nav-link { color:var(--text-secondary); text-decoration:none; font-size:.82rem; font-weight:500; display:flex; align-items:center; gap:.35rem; padding:.38rem .75rem; border-radius:6px; transition:all .2s; white-space:nowrap; }
         .nav-link:hover { color:var(--primary); background:var(--primary-glow); }
 
         /* MAIN */
-        main {
-            flex:1; position:relative; z-index:1;
-            display:flex; align-items:center; justify-content:center;
-            padding:3rem 1.5rem;
-        }
-        .auth-wrapper { width:100%; max-width:480px; }
+        main { flex:1; position:relative; z-index:1; display:flex; align-items:flex-start; justify-content:center; padding:1.75rem 1rem; }
+        .auth-wrapper { width:100%; max-width:450px; padding-bottom:1.5rem; }
 
         /* CARD */
         .auth-card {
-            background:var(--bg-surface); border:1px solid var(--border);
-            border-radius:16px; padding:2.5rem;
-            box-shadow:0 25px 80px rgba(0,0,0,0.5);
-            animation:fadeInUp 0.5s ease;
+            background:var(--bg-surface); border:1px solid var(--border); border-radius:14px; padding:2rem 1.75rem;
+            box-shadow:0 20px 60px rgba(0,0,0,.5); animation:fadeInUp .4s ease;
         }
-        @keyframes fadeInUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+        .auth-icon { width:50px; height:50px; border-radius:12px; margin:0 auto 1rem; background:linear-gradient(135deg,#059669,var(--green)); display:flex; align-items:center; justify-content:center; font-size:1.3rem; color:#fff; box-shadow:0 0 22px var(--green-glow); }
+        .auth-title    { font-size:1.45rem; font-weight:800; letter-spacing:-.02em; text-align:center; margin-bottom:.3rem; }
+        .auth-subtitle { color:var(--text-secondary); font-size:.84rem; text-align:center; margin-bottom:1.25rem; }
 
-        .auth-icon {
-            width:60px; height:60px; border-radius:14px; margin:0 auto 1.5rem;
-            background:linear-gradient(135deg,var(--green),#34d058);
-            display:flex; align-items:center; justify-content:center;
-            font-size:1.5rem; color:#fff; box-shadow:0 0 30px var(--green-glow);
-        }
-        .auth-title { font-size:1.65rem; font-weight:800; letter-spacing:-0.02em; text-align:center; margin-bottom:0.5rem; }
-        .auth-subtitle { color:var(--text-secondary); font-size:0.9rem; text-align:center; margin-bottom:2rem; }
+        /* PERKS */
+        .perks { display:flex; flex-direction:column; gap:.4rem; margin-bottom:1.25rem; background:var(--bg-elevated); border:1px solid var(--border); border-radius:9px; padding:.75rem .9rem; }
+        .perk { display:flex; align-items:center; gap:.45rem; font-size:.78rem; color:var(--text-secondary); }
+        .perk i { color:var(--green); font-size:.72rem; flex-shrink:0; }
 
         /* ALERT */
-        .alert {
-            padding:0.85rem 1rem; border-radius:10px; font-size:0.875rem; font-weight:500;
-            display:flex; align-items:flex-start; gap:0.5rem; margin-bottom:1.25rem;
-        }
-        .alert i { margin-top:1px; flex-shrink:0; }
-        .alert-error   { background:rgba(248,81,73,0.1); border:1px solid rgba(248,81,73,0.3); color:var(--red); }
-        .alert-success { background:rgba(63,185,80,0.1); border:1px solid rgba(63,185,80,0.3); color:var(--green); }
+        .alert { padding:.75rem .9rem; border-radius:8px; font-size:.82rem; font-weight:500; display:flex; align-items:flex-start; gap:.45rem; margin-bottom:1rem; }
+        .alert i { margin-top:2px; flex-shrink:0; }
+        .alert-error   { background:rgba(248,113,113,.1); border:1px solid rgba(248,113,113,.3); color:var(--red); }
+        .alert-success { background:rgba(52,211,153,.1);  border:1px solid rgba(52,211,153,.3);  color:var(--green); }
 
-        /* FORM ROW */
-        .form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
-        @media(max-width:480px) { .form-row { grid-template-columns:1fr; } }
-        .form-group { margin-bottom:1.1rem; }
-        .form-label {
-            display:block; font-size:0.78rem; font-weight:600; color:var(--text-secondary);
-            margin-bottom:0.45rem; text-transform:uppercase; letter-spacing:0.05em;
-        }
-        .input-wrapper { position:relative; }
-        .input-icon {
-            position:absolute; left:13px; top:50%; transform:translateY(-50%);
-            color:var(--text-muted); font-size:0.85rem; pointer-events:none; transition:color 0.2s;
-        }
+        /* FORM ROW — responsive */
+        .form-row { display:grid; grid-template-columns:1fr 1fr; gap:.85rem; }
+        .form-group { margin-bottom:.9rem; }
+        .form-label { display:block; font-size:.72rem; font-weight:600; color:var(--text-secondary); margin-bottom:.35rem; text-transform:uppercase; letter-spacing:.05em; }
+        .input-wrap { position:relative; }
+        .input-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:.82rem; pointer-events:none; transition:color .2s; }
         .form-control {
-            width:100%; background:var(--bg-elevated); border:1px solid var(--border);
-            border-radius:10px; padding:0.75rem 1rem 0.75rem 2.6rem;
-            color:var(--text-primary); font-family:inherit; font-size:0.875rem;
-            outline:none; transition:all 0.2s;
+            width:100%; background:var(--bg-elevated); border:1px solid var(--border); border-radius:8px;
+            padding:.7rem .95rem .7rem 2.45rem; color:var(--text-primary); font-family:inherit;
+            font-size:.875rem; outline:none; transition:all .2s; -webkit-appearance:none;
         }
         .form-control:focus { border-color:var(--primary); box-shadow:0 0 0 3px var(--primary-glow); }
         .form-control::placeholder { color:var(--text-muted); }
-        .form-control.error { border-color:var(--red); box-shadow:0 0 0 3px rgba(248,81,73,0.1); }
-        .form-control.success { border-color:var(--green); }
-        .field-error { font-size:0.75rem; color:var(--red); margin-top:0.35rem; display:none; }
-        .field-error.show { display:block; }
+        .form-control.err  { border-color:var(--red); box-shadow:0 0 0 3px rgba(248,113,113,.1); }
+        .form-control.ok   { border-color:var(--green); }
+        .field-err { font-size:.7rem; color:var(--red); margin-top:.25rem; display:none; }
+        .field-err.show { display:block; }
 
         /* Password toggle */
-        .pwd-toggle {
-            position:absolute; right:11px; top:50%; transform:translateY(-50%);
-            background:none; border:none; color:var(--text-muted);
-            cursor:pointer; font-size:0.85rem; padding:4px; transition:color 0.2s;
-        }
+        .pwd-toggle { position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:.82rem; padding:4px 6px; transition:color .2s; line-height:1; }
         .pwd-toggle:hover { color:var(--primary); }
 
-        /* PASSWORD STRENGTH */
-        .pwd-strength { margin-top:0.6rem; }
-        .pwd-strength-bar { display:flex; gap:4px; margin-bottom:0.3rem; }
-        .bar-seg {
-            height:3px; flex:1; border-radius:2px;
-            background:var(--border); transition:background 0.3s;
-        }
-        .bar-seg.weak     { background:#f85149; }
-        .bar-seg.fair     { background:#ffa657; }
-        .bar-seg.good     { background:#e3b341; }
-        .bar-seg.strong   { background:#3fb950; }
-        .pwd-strength-text { font-size:0.72rem; color:var(--text-muted); }
+        /* Strength */
+        .pwd-strength { margin-top:.45rem; }
+        .strength-bar { display:flex; gap:3px; margin-bottom:.25rem; }
+        .seg { height:3px; flex:1; border-radius:2px; background:var(--border); transition:background .3s; }
+        .seg.weak   { background:var(--red); }
+        .seg.fair   { background:var(--orange); }
+        .seg.good   { background:#fbbf24; }
+        .seg.strong { background:var(--green); }
+        .strength-txt { font-size:.68rem; color:var(--text-muted); }
 
-        /* TERMS */
-        .terms-check {
-            display:flex; align-items:flex-start; gap:0.6rem;
-            font-size:0.8rem; color:var(--text-secondary); margin-bottom:1.5rem;
-        }
+        /* Terms */
+        .terms-check { display:flex; align-items:flex-start; gap:.5rem; font-size:.76rem; color:var(--text-secondary); margin-bottom:1.15rem; line-height:1.5; }
         .terms-check input[type="checkbox"] { accent-color:var(--primary); width:14px; height:14px; margin-top:2px; flex-shrink:0; }
         .terms-check a { color:var(--primary); text-decoration:none; }
         .terms-check a:hover { text-decoration:underline; }
 
-        /* SUBMIT */
+        /* Submit */
         .btn-submit {
-            width:100%; padding:0.9rem;
-            background:linear-gradient(135deg,var(--green),#34d058);
-            border:none; border-radius:10px;
-            color:#fff; font-family:inherit; font-size:0.95rem; font-weight:700;
-            cursor:pointer; transition:all 0.3s;
-            box-shadow:0 0 25px var(--green-glow);
-            display:flex; align-items:center; justify-content:center; gap:0.5rem;
-            letter-spacing:0.01em;
+            width:100%; padding:.8rem; background:linear-gradient(135deg,#059669,var(--green));
+            border:none; border-radius:8px; color:#fff; font-family:inherit; font-size:.9rem; font-weight:700;
+            cursor:pointer; transition:all .25s; box-shadow:0 0 20px var(--green-glow);
+            display:flex; align-items:center; justify-content:center; gap:.45rem;
+            min-height: 44px;
         }
-        .btn-submit:hover { transform:translateY(-2px); box-shadow:0 6px 35px var(--green-glow); }
+        .btn-submit:hover { transform:translateY(-2px); box-shadow:0 5px 26px var(--green-glow); }
         .btn-submit:active { transform:translateY(0); }
 
-        .divider { display:flex; align-items:center; gap:1rem; margin:1.5rem 0; color:var(--text-muted); font-size:0.8rem; }
-        .divider::before, .divider::after { content:''; flex:1; height:1px; background:var(--border); }
-        .auth-footer { text-align:center; margin-top:1.25rem; font-size:0.875rem; color:var(--text-secondary); }
+        .divider { display:flex; align-items:center; gap:.8rem; margin:1.15rem 0; color:var(--text-muted); font-size:.74rem; }
+        .divider::before,.divider::after { content:''; flex:1; height:1px; background:var(--border); }
+        .auth-footer { text-align:center; font-size:.82rem; color:var(--text-secondary); }
         .auth-footer a { color:var(--primary); text-decoration:none; font-weight:600; }
         .auth-footer a:hover { text-decoration:underline; }
 
-        /* PERKS */
-        .perks { display:flex; flex-direction:column; gap:0.6rem; margin-bottom:2rem; }
-        .perk {
-            display:flex; align-items:center; gap:0.6rem;
-            font-size:0.8rem; color:var(--text-secondary);
-        }
-        .perk-icon { color:var(--green); font-size:0.75rem; flex-shrink:0; }
-
         /* FOOTER */
-        footer {
-            position:relative; z-index:1; text-align:center; padding:1.5rem;
-            border-top:1px solid var(--border); color:var(--text-muted); font-size:0.78rem;
-        }
+        footer { position:relative; z-index:1; text-align:center; padding:1rem 1.25rem; border-top:1px solid var(--border); color:var(--text-muted); font-size:.74rem; }
         footer a { color:var(--text-muted); text-decoration:none; }
         footer a:hover { color:var(--primary); }
+
+        /* MOBILE OPTIMIZATIONS */
+        @media (max-width: 560px) {
+            .form-row { grid-template-columns: 1fr; gap:.85rem; }
+        }
+        @media (max-width: 480px) {
+            nav { padding: .75rem 1rem; }
+            main { padding: 1.25rem .75rem; }
+            .auth-card { padding: 1.5rem 1.15rem; border-radius: 12px; }
+            .auth-title { font-size: 1.28rem; }
+            .form-control { font-size: 16px; } /* Prevents iOS auto-zoom */
+        }
     </style>
 </head>
 <body>
 <div class="bg-grid"></div>
-<div class="bg-glow"></div>
+<div class="bg-glow-1"></div>
 
-<!-- NAV -->
 <nav>
     <div class="nav-inner">
         <a href="/" class="nav-brand">
-            <div class="brand-icon"><i class="fas fa-chart-network"></i></div>
+            <div class="brand-icon">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M5 8L12 4L19 8L12 20L5 8Z" fill="rgba(255,255,255,.12)" stroke="rgba(255,255,255,.55)" stroke-width="1"/><path d="M5 8H19" stroke="rgba(255,255,255,.4)" stroke-width="1"/><path d="M8 8L12 4L16 8L12 14L8 8Z" fill="rgba(255,255,255,.55)"/></svg>
+            </div>
             <span class="brand-name">DataSphere</span>
         </a>
-        <a href="/login" class="nav-link">
-            <i class="fas fa-sign-in-alt"></i> Sign In
-        </a>
+        <a href="/login" class="nav-link"><i class="fas fa-sign-in-alt"></i> Sign In</a>
     </div>
 </nav>
 
-<!-- MAIN -->
 <main>
     <div class="auth-wrapper">
         <div class="auth-card">
@@ -222,205 +160,129 @@
             <h1 class="auth-title">Create Your Account</h1>
             <p class="auth-subtitle">Join DataSphere — Start analysing your data in minutes</p>
 
-            <!-- Perks -->
             <div class="perks">
-                <div class="perk"><i class="fas fa-check-circle perk-icon"></i> Free forever — no credit card required</div>
-                <div class="perk"><i class="fas fa-check-circle perk-icon"></i> AI-powered insights on your data instantly</div>
-                <div class="perk"><i class="fas fa-check-circle perk-icon"></i> Secure, encrypted data storage</div>
+                <div class="perk"><i class="fas fa-check-circle"></i> Free forever — no credit card required</div>
+                <div class="perk"><i class="fas fa-check-circle"></i> AI-powered insights on your data instantly</div>
+                <div class="perk"><i class="fas fa-check-circle"></i> Secure, SHA-256 encrypted data storage</div>
             </div>
 
-            <!-- Alerts -->
             {% with messages = get_flashed_messages(with_categories=true) %}
-              {% if messages %}
-                {% for category, message in messages %}
-                  <div class="alert alert-{{ 'error' if category == 'error' else 'success' }}">
-                    <i class="fas fa-{{ 'times-circle' if category == 'error' else 'check-circle' }}"></i>
-                    {{ message }}
-                  </div>
-                {% endfor %}
-              {% endif %}
+              {% if messages %}{% for category, message in messages %}
+                <div class="alert alert-{{ 'error' if category == 'error' else 'success' }}">
+                  <i class="fas fa-{{ 'times-circle' if category == 'error' else 'check-circle' }}"></i>{{ message }}
+                </div>
+              {% endfor %}{% endif %}
             {% endwith %}
 
-            <form method="POST" action="/register" id="registerForm" novalidate>
-
-                <!-- Full Name + Username -->
+            <form method="POST" action="/register" id="regForm" novalidate>
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label" for="full_name">Full Name</label>
-                        <div class="input-wrapper">
-                            <input type="text" id="full_name" name="full_name" class="form-control"
-                                placeholder="John Doe" required autocomplete="name"
-                                value="{{ request.form.get('full_name', '') }}">
+                        <div class="input-wrap">
+                            <input type="text" id="full_name" name="full_name" class="form-control" placeholder="John Doe" required autocomplete="name" value="{{ request.form.get('full_name','') }}">
                             <i class="fas fa-id-card input-icon"></i>
                         </div>
-                        <div class="field-error" id="nameError">Please enter your full name.</div>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="username">Username</label>
-                        <div class="input-wrapper">
-                            <input type="text" id="username" name="username" class="form-control"
-                                placeholder="johndoe" required autocomplete="username"
-                                value="{{ request.form.get('username', '') }}">
+                        <div class="input-wrap">
+                            <input type="text" id="username" name="username" class="form-control" placeholder="johndoe" required autocomplete="username" value="{{ request.form.get('username','') }}" oninput="validateUsername(this)">
                             <i class="fas fa-at input-icon"></i>
                         </div>
-                        <div class="field-error" id="usernameError">Min 3 characters required.</div>
+                        <div class="field-err" id="usernameErr">Min 3 characters required.</div>
                     </div>
                 </div>
 
-                <!-- Email -->
                 <div class="form-group">
                     <label class="form-label" for="email">Work Email</label>
-                    <div class="input-wrapper">
-                        <input type="email" id="email" name="email" class="form-control"
-                            placeholder="you@company.com" required autocomplete="email"
-                            value="{{ request.form.get('email', '') }}">
+                    <div class="input-wrap">
+                        <input type="email" id="email" name="email" class="form-control" placeholder="you@company.com" required autocomplete="email" value="{{ request.form.get('email','') }}">
                         <i class="fas fa-envelope input-icon"></i>
                     </div>
-                    <div class="field-error" id="emailError">Please enter a valid email address.</div>
                 </div>
 
-                <!-- Password -->
                 <div class="form-group">
                     <label class="form-label" for="password">Password</label>
-                    <div class="input-wrapper">
-                        <input type="password" id="password" name="password" class="form-control"
-                            placeholder="Min 8 chars, 1 uppercase, 1 number" required autocomplete="new-password"
-                            oninput="checkStrength(this.value)">
+                    <div class="input-wrap">
+                        <input type="password" id="password" name="password" class="form-control" placeholder="Min 8 chars, 1 uppercase, 1 number" required autocomplete="new-password" oninput="checkStrength(this.value)">
                         <i class="fas fa-lock input-icon"></i>
-                        <button type="button" class="pwd-toggle" onclick="togglePwd('password', this)">
-                            <i class="fas fa-eye"></i>
-                        </button>
+                        <button type="button" class="pwd-toggle" onclick="togglePwd('password',this)"><i class="fas fa-eye"></i></button>
                     </div>
                     <div class="pwd-strength" id="strengthMeter" style="display:none;">
-                        <div class="pwd-strength-bar">
-                            <div class="bar-seg" id="seg1"></div>
-                            <div class="bar-seg" id="seg2"></div>
-                            <div class="bar-seg" id="seg3"></div>
-                            <div class="bar-seg" id="seg4"></div>
+                        <div class="strength-bar">
+                            <div class="seg" id="s1"></div><div class="seg" id="s2"></div>
+                            <div class="seg" id="s3"></div><div class="seg" id="s4"></div>
                         </div>
-                        <span class="pwd-strength-text" id="strengthText">Enter password</span>
+                        <span class="strength-txt" id="strengthTxt"></span>
                     </div>
-                    <div class="field-error" id="passwordError">Min 8 chars, 1 uppercase, 1 number.</div>
                 </div>
 
-                <!-- Confirm Password -->
                 <div class="form-group">
                     <label class="form-label" for="confirm_password">Confirm Password</label>
-                    <div class="input-wrapper">
-                        <input type="password" id="confirm_password" name="confirm_password"
-                            class="form-control" placeholder="Re-enter your password" required autocomplete="new-password">
+                    <div class="input-wrap">
+                        <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="Re-enter your password" required autocomplete="new-password" oninput="validateConfirm(this)">
                         <i class="fas fa-shield-halved input-icon"></i>
-                        <button type="button" class="pwd-toggle" onclick="togglePwd('confirm_password', this)">
-                            <i class="fas fa-eye"></i>
-                        </button>
+                        <button type="button" class="pwd-toggle" onclick="togglePwd('confirm_password',this)"><i class="fas fa-eye"></i></button>
                     </div>
-                    <div class="field-error" id="confirmError">Passwords do not match.</div>
+                    <div class="field-err" id="confirmErr">Passwords do not match.</div>
                 </div>
 
-                <!-- Terms -->
                 <div class="terms-check">
                     <input type="checkbox" id="terms" name="terms" required>
                     <label for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
                 </div>
 
-                <button type="submit" class="btn-submit" id="submitBtn">
-                    <i class="fas fa-rocket"></i>
-                    Create My Free Account
-                </button>
+                <button type="submit" class="btn-submit"><i class="fas fa-rocket"></i> Create My Free Account</button>
             </form>
 
             <div class="divider">already have an account?</div>
-            <div class="auth-footer">
-                <a href="/login"><i class="fas fa-sign-in-alt" style="margin-right:0.3rem;"></i>Sign in instead</a>
-            </div>
+            <div class="auth-footer"><a href="/login"><i class="fas fa-sign-in-alt" style="margin-right:.25rem;"></i>Sign in instead</a></div>
         </div>
     </div>
 </main>
 
-<footer>
-    &copy; 2024 DataSphere Analytics &nbsp;·&nbsp;
-    <a href="#">Privacy</a> &nbsp;·&nbsp;
-    <a href="#">Terms</a>
-</footer>
+<footer>&copy; 2024 DataSphere Analytics &nbsp;·&nbsp;<a href="#">Privacy</a> &nbsp;·&nbsp;<a href="#">Terms</a></footer>
 
 <script>
-function togglePwd(fieldId, btn) {
-    const field = document.getElementById(fieldId);
-    const icon = btn.querySelector('i');
-    if (field.type === 'password') {
-        field.type = 'text';
-        icon.classList.replace('fa-eye', 'fa-eye-slash');
-    } else {
-        field.type = 'password';
-        icon.classList.replace('fa-eye-slash', 'fa-eye');
-    }
+function togglePwd(id, btn) {
+    const f = document.getElementById(id), i = btn.querySelector('i');
+    f.type = f.type === 'password' ? 'text' : 'password';
+    i.className = f.type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
 }
-
+function validateUsername(el) {
+    const err = document.getElementById('usernameErr');
+    if (el.value.length > 0 && el.value.length < 3) { el.classList.add('err'); err.classList.add('show'); }
+    else { el.classList.remove('err'); err.classList.remove('show'); }
+}
+function validateConfirm(el) {
+    const pwd = document.getElementById('password').value;
+    const err = document.getElementById('confirmErr');
+    if (el.value && el.value !== pwd) { el.classList.add('err'); err.classList.add('show'); }
+    else { el.classList.remove('err'); err.classList.remove('show'); if (el.value) el.classList.add('ok'); }
+}
 function checkStrength(pwd) {
-    const meter = document.getElementById('strengthMeter');
-    meter.style.display = pwd ? 'block' : 'none';
-    const segs = [document.getElementById('seg1'), document.getElementById('seg2'),
-                  document.getElementById('seg3'), document.getElementById('seg4')];
-    const text = document.getElementById('strengthText');
-    segs.forEach(s => s.className = 'bar-seg');
-
+    const m = document.getElementById('strengthMeter');
+    m.style.display = pwd ? 'block' : 'none';
+    const segs = ['s1','s2','s3','s4'].map(id => document.getElementById(id));
+    const txt  = document.getElementById('strengthTxt');
+    segs.forEach(s => s.className = 'seg');
     let score = 0;
-    if (pwd.length >= 8)             score++;
-    if (/[A-Z]/.test(pwd))           score++;
-    if (/[0-9]/.test(pwd))           score++;
-    if (/[^A-Za-z0-9]/.test(pwd))   score++;
-
-    const levels = ['', 'weak', 'fair', 'good', 'strong'];
-    const labels = ['', '⚡ Weak', '⚠ Fair', '✓ Good', '✅ Strong'];
-    const colors = { weak:'#f85149', fair:'#ffa657', good:'#e3b341', strong:'#3fb950' };
-
-    for (let i = 0; i < score; i++) {
-        segs[i].className = 'bar-seg ' + (levels[score] || '');
-    }
-    text.textContent = labels[score] || '';
-    text.style.color = colors[levels[score]] || '#484f58';
+    if (pwd.length >= 8)           score++;
+    if (/[A-Z]/.test(pwd))         score++;
+    if (/[0-9]/.test(pwd))         score++;
+    if (/[^A-Za-z0-9]/.test(pwd)) score++;
+    const cls    = ['','weak','fair','good','strong'];
+    const labels = ['','⚡ Weak','⚠ Fair','✓ Good','✅ Strong'];
+    const colors = {weak:'#f87171', fair:'#fb923c', good:'#fbbf24', strong:'#34d399'};
+    for (let i = 0; i < score; i++) segs[i].className = 'seg ' + (cls[score] || '');
+    txt.textContent  = labels[score] || '';
+    txt.style.color  = colors[cls[score]] || '#64748b';
 }
-
-// Real-time validation
-document.getElementById('confirm_password').addEventListener('input', function() {
+document.getElementById('regForm').addEventListener('submit', function(e) {
     const pwd = document.getElementById('password').value;
-    const err = document.getElementById('confirmError');
-    if (this.value && this.value !== pwd) {
-        this.classList.add('error');
-        err.classList.add('show');
-    } else {
-        this.classList.remove('error');
-        err.classList.remove('show');
-        if (this.value) this.classList.add('success');
-    }
-});
-
-document.getElementById('username').addEventListener('input', function() {
-    const err = document.getElementById('usernameError');
-    if (this.value.length > 0 && this.value.length < 3) {
-        this.classList.add('error'); err.classList.add('show');
-    } else {
-        this.classList.remove('error'); err.classList.remove('show');
-    }
-});
-
-// Client-side validation before submit
-document.getElementById('registerForm').addEventListener('submit', function(e) {
-    const pwd = document.getElementById('password').value;
-    const cpwd = document.getElementById('confirm_password').value;
-    const terms = document.getElementById('terms').checked;
-
-    if (pwd !== cpwd) {
-        e.preventDefault();
-        document.getElementById('confirm_password').classList.add('error');
-        document.getElementById('confirmError').classList.add('show');
-        return;
-    }
-    if (!terms) {
-        e.preventDefault();
-        alert('Please agree to the Terms of Service to continue.');
-        return;
-    }
+    const cpd = document.getElementById('confirm_password').value;
+    if (pwd !== cpd) { e.preventDefault(); document.getElementById('confirmErr').classList.add('show'); return; }
+    if (!document.getElementById('terms').checked) { e.preventDefault(); alert('Please agree to the Terms of Service.'); }
 });
 </script>
 </body>
