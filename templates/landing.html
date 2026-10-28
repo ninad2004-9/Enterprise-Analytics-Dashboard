@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="DataSphere Analytics — An open-source interactive business intelligence and enterprise analytics dashboard built with Python, Flask, Dash, and Plotly.">
+    <meta name="robots" content="index, follow">
     <title>DataSphere — Enterprise Analytics Platform</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -650,6 +652,7 @@
         </div>
 
         <div class="nav-actions">
+            <a href="/demo-login" class="btn-ghost" style="color:var(--primary-bright);border:1px solid rgba(79,142,247,0.3);"><i class="fas fa-play" style="font-size:0.65rem;margin-right:4px;"></i> Demo</a>
             <a href="/login"    class="btn-ghost">Sign In</a>
             <a href="/register" class="btn-primary-nav">Get Started Free</a>
         </div>
@@ -667,6 +670,7 @@
     <a href="#stats"       onclick="closeDrawer()">Analytics</a>
     <div class="nav-drawer-divider"></div>
     <div class="nav-drawer-cta">
+        <a href="/demo-login" class="drawer-signin" style="color:var(--primary-bright);border-color:rgba(79,142,247,0.3);"><i class="fas fa-play" style="font-size:0.75rem;margin-right:6px;"></i> Instant Demo</a>
         <a href="/login"    class="drawer-signin">Sign In</a>
         <a href="/register" class="drawer-start">Get Started Free</a>
     </div>
@@ -705,9 +709,9 @@
 
     <!-- Hero text -->
     <div class="hero-content">
-        <div class="hero-badge">
+        <div class="hero-badge" onclick="window.location.href='/demo-login'" style="cursor:pointer;" title="Launch Instant Demo">
             <span class="hero-badge-dot"></span>
-            Trusted by 10,000+ Enterprises Worldwide
+            Open Source Developer Showcase &bull; 1-Click Demo Available
             <i class="fas fa-arrow-right" style="font-size:.6rem;"></i>
         </div>
 
@@ -717,12 +721,13 @@
         </h1>
 
         <p class="hero-subtitle">
-            The most powerful enterprise analytics platform. Upload your data, get instant AI-powered insights, and make decisions with confidence — no code required.
+            A high-performance enterprise analytics suite built with Python, Dash, and Plotly. Upload your datasets, visualize statistical trends, and unlock executive KPI insights.
         </p>
 
         <div class="hero-actions">
-            <a href="/register" class="btn-hero-primary"><i class="fas fa-rocket"></i> Start Analysing Free</a>
-            <a href="#how-it-works" class="btn-hero-secondary"><i class="fas fa-play-circle"></i> See How It Works</a>
+            <a href="/demo-login" class="btn-hero-primary" style="background:linear-gradient(135deg,#2563eb,#3b82f6);"><i class="fas fa-bolt"></i> Instant Demo Access</a>
+            <a href="/register" class="btn-hero-secondary"><i class="fas fa-user-plus"></i> Create Free Account</a>
+            <a href="#how-it-works" class="btn-hero-secondary"><i class="fas fa-play-circle"></i> How It Works</a>
         </div>
 
         <!-- Mockup -->
@@ -772,24 +777,24 @@
 
 <!-- ═══════════ TRUST BAR ═══════════ -->
 <div class="trust-bar">
-    <p>Trusted by teams at</p>
+    <p>Engineered For Modern Enterprise Analytics</p>
     <div class="trust-logos">
-        <span class="trust-logo">ENTERPRISE CO.</span>
-        <span class="trust-logo">FINTECH PRO</span>
-        <span class="trust-logo">DATAWORKS</span>
-        <span class="trust-logo">ANALYTIQ</span>
-        <span class="trust-logo">NEXGEN AI</span>
-        <span class="trust-logo">CLOUDBASE</span>
+        <span class="trust-logo"><i class="fas fa-chart-line" style="margin-right:6px;color:#60a5fa;"></i>PLOTLY BI ENGINE</span>
+        <span class="trust-logo"><i class="fas fa-brain" style="margin-right:6px;color:#a78bfa;"></i>AI CORRELATIONS</span>
+        <span class="trust-logo"><i class="fas fa-database" style="margin-right:6px;color:#34d399;"></i>SQLITE PERSISTENCE</span>
+        <span class="trust-logo"><i class="fas fa-bolt" style="margin-right:6px;color:#fb923c;"></i>SUB-SECOND QUERIES</span>
+        <span class="trust-logo"><i class="fas fa-shield-alt" style="margin-right:6px;color:#22d3ee;"></i>SESSION SECURITY</span>
+        <span class="trust-logo"><i class="fas fa-file-csv" style="margin-right:6px;color:#f87171;"></i>UNIVERSAL INGESTION</span>
     </div>
 </div>
 
 <!-- ═══════════ STATS ═══════════ -->
 <div class="stats-section" id="stats">
     <div class="stats-grid">
-        <div class="stat-card"><div class="stat-num">10K+</div><div class="stat-label">Enterprise Users</div></div>
-        <div class="stat-card"><div class="stat-num">500M+</div><div class="stat-label">Data Rows Processed</div></div>
-        <div class="stat-card"><div class="stat-num">99.9%</div><div class="stat-label">Uptime SLA</div></div>
-        <div class="stat-card"><div class="stat-num">2.3s</div><div class="stat-label">Average Load Time</div></div>
+        <div class="stat-card"><div class="stat-num">100%</div><div class="stat-label">Isolated Session State</div></div>
+        <div class="stat-card"><div class="stat-num">50+</div><div class="stat-label">Statistical Visuals</div></div>
+        <div class="stat-card"><div class="stat-num">&lt; 1s</div><div class="stat-label">Dashboard Response</div></div>
+        <div class="stat-card"><div class="stat-num">Open</div><div class="stat-label">Source Python &amp; Dash</div></div>
     </div>
 </div>
 
@@ -842,12 +847,13 @@
     <div class="cta-bg"></div>
     <div class="cta-glow"></div>
     <div class="cta-inner">
-        <div class="section-tag" style="display:inline-flex;margin-bottom:1rem;"><i class="fas fa-rocket"></i> Start Today — It's Free</div>
+        <div class="section-tag" style="display:inline-flex;margin-bottom:1rem;"><i class="fas fa-rocket"></i> Open Access Demo</div>
         <h2 class="cta-title">Ready to unlock the<br><span class="text-gradient">power of your data?</span></h2>
-        <p class="cta-sub">Join thousands of professionals who use DataSphere to make smarter, faster decisions every day.</p>
+        <p class="cta-sub">Test the interactive analytics platform now with sample financial data or upload your own datasets.</p>
         <div class="cta-actions">
-            <a href="/register" class="btn-hero-primary"><i class="fas fa-user-plus"></i> Create Free Account</a>
-            <a href="/login"    class="btn-hero-secondary"><i class="fas fa-sign-in-alt"></i> Sign In to Dashboard</a>
+            <a href="/demo-login" class="btn-hero-primary" style="background:linear-gradient(135deg,#2563eb,#3b82f6);"><i class="fas fa-bolt"></i> Instant Demo Access</a>
+            <a href="/register" class="btn-hero-secondary"><i class="fas fa-user-plus"></i> Create Free Account</a>
+            <a href="/login"    class="btn-hero-secondary"><i class="fas fa-sign-in-alt"></i> Sign In</a>
         </div>
     </div>
 </section>
@@ -863,43 +869,43 @@
                     </div>
                     <span class="footer-brand-name">DataSphere</span>
                 </div>
-                <p class="footer-desc">The enterprise analytics platform that transforms raw data into strategic advantage. Built for professionals who need answers now.</p>
+                <p class="footer-desc">An open-source enterprise analytics and business intelligence dashboard designed for high-performance interactive exploration, KPI tracking, and statistical modeling.</p>
                 <div class="footer-social">
-                    <a href="#" class="social-btn"><i class="fab fa-github"></i></a>
-                    <a href="#" class="social-btn"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="social-btn"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://github.com/ninad2004-9/Enterprise-Analytics-Dashboard" target="_blank" rel="noopener noreferrer" class="social-btn" title="GitHub Repository"><i class="fab fa-github"></i></a>
+                    <a href="/privacy" class="social-btn" title="Privacy Policy"><i class="fas fa-shield-alt"></i></a>
+                    <a href="/terms" class="social-btn" title="Terms of Service"><i class="fas fa-file-contract"></i></a>
                 </div>
             </div>
             <div>
-                <p class="footer-col-title">Product</p>
+                <p class="footer-col-title">Navigation</p>
                 <ul class="footer-links">
                     <li><a href="#features">Features</a></li>
                     <li><a href="#how-it-works">How It Works</a></li>
-                    <li><a href="/register">Get Started</a></li>
+                    <li><a href="/demo-login">Live Demo</a></li>
                     <li><a href="/login">Sign In</a></li>
                 </ul>
             </div>
             <div>
-                <p class="footer-col-title">Platform</p>
+                <p class="footer-col-title">Analytics Stack</p>
                 <ul class="footer-links">
-                    <li><a href="#">Analytics</a></li>
-                    <li><a href="#">Visualizations</a></li>
-                    <li><a href="#">AI Insights</a></li>
-                    <li><a href="#">Data Export</a></li>
+                    <li><a href="#features">Executive KPIs</a></li>
+                    <li><a href="#features">Interactive Charts</a></li>
+                    <li><a href="#features">AI Correlation</a></li>
+                    <li><a href="#features">Data Profiling</a></li>
                 </ul>
             </div>
             <div>
-                <p class="footer-col-title">Company</p>
+                <p class="footer-col-title">Project &amp; Legal</p>
                 <ul class="footer-links">
-                    <li><a href="#">About</a></li>
-                    <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Terms of Service</a></li>
-                    <li><a href="#">Contact</a></li>
+                    <li><a href="/privacy">Privacy Policy</a></li>
+                    <li><a href="/terms">Terms of Service</a></li>
+                    <li><a href="https://github.com/ninad2004-9/Enterprise-Analytics-Dashboard" target="_blank" rel="noopener noreferrer">Source Code (GitHub)</a></li>
+                    <li><a href="https://github.com/ninad2004-9/Enterprise-Analytics-Dashboard/issues" target="_blank" rel="noopener noreferrer">Report Issue / Feedback</a></li>
                 </ul>
             </div>
         </div>
         <div class="footer-bottom">
-            <span class="footer-copy">&copy; 2024 DataSphere Analytics. All rights reserved.</span>
+            <span class="footer-copy">&copy; 2024 DataSphere Analytics &bull; Educational &amp; Developer Portfolio Project.</span>
             <div class="footer-tech">
                 <span class="tech-pill">Python</span><span class="tech-pill">Dash</span>
                 <span class="tech-pill">Plotly</span><span class="tech-pill">SQLite3</span><span class="tech-pill">Flask</span>

@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="DataSphere is an educational open-source enterprise analytics dashboard.">
+    <meta name="robots" content="index, follow">
     <title>Create Account — DataSphere Analytics</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -21,7 +23,7 @@
             min-height:100vh; display:flex; flex-direction:column;
             -webkit-font-smoothing:antialiased; overflow-x:hidden;
         }
-        @keyframes fadeInUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes fadeInUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
 
         .bg-grid {
             position:fixed; inset:0; pointer-events:none; z-index:0;
@@ -42,21 +44,29 @@
 
         /* MAIN */
         main { flex:1; position:relative; z-index:1; display:flex; align-items:flex-start; justify-content:center; padding:1.75rem 1rem; }
-        .auth-wrapper { width:100%; max-width:450px; padding-bottom:1.5rem; }
+        .auth-wrapper { width:100%; max-width:440px; padding-bottom:1.5rem; }
 
         /* CARD */
         .auth-card {
-            background:var(--bg-surface); border:1px solid var(--border); border-radius:14px; padding:2rem 1.75rem;
+            background:var(--bg-surface); border:1px solid var(--border); border-radius:14px; padding:1.85rem 1.65rem;
             box-shadow:0 20px 60px rgba(0,0,0,.5); animation:fadeInUp .4s ease;
         }
-        .auth-icon { width:50px; height:50px; border-radius:12px; margin:0 auto 1rem; background:linear-gradient(135deg,#059669,var(--green)); display:flex; align-items:center; justify-content:center; font-size:1.3rem; color:#fff; box-shadow:0 0 22px var(--green-glow); }
-        .auth-title    { font-size:1.45rem; font-weight:800; letter-spacing:-.02em; text-align:center; margin-bottom:.3rem; }
-        .auth-subtitle { color:var(--text-secondary); font-size:.84rem; text-align:center; margin-bottom:1.25rem; }
+        .auth-icon { width:48px; height:48px; border-radius:12px; margin:0 auto .85rem; background:linear-gradient(135deg,#059669,var(--green)); display:flex; align-items:center; justify-content:center; font-size:1.2rem; color:#fff; box-shadow:0 0 20px var(--green-glow); }
+        .auth-title    { font-size:1.4rem; font-weight:800; letter-spacing:-.02em; text-align:center; margin-bottom:.25rem; }
+        .auth-subtitle { color:var(--text-secondary); font-size:.82rem; text-align:center; margin-bottom:1rem; }
+
+        /* DEMO BANNER */
+        .demo-banner {
+            background:rgba(52,211,153,.08); border:1px solid rgba(52,211,153,.22);
+            border-radius:8px; padding:.55rem .75rem; margin-bottom:1rem;
+            font-size:.74rem; color:var(--text-secondary); text-align:center; line-height:1.45;
+        }
+        .demo-banner strong { color:var(--green); }
 
         /* PERKS */
-        .perks { display:flex; flex-direction:column; gap:.4rem; margin-bottom:1.25rem; background:var(--bg-elevated); border:1px solid var(--border); border-radius:9px; padding:.75rem .9rem; }
-        .perk { display:flex; align-items:center; gap:.45rem; font-size:.78rem; color:var(--text-secondary); }
-        .perk i { color:var(--green); font-size:.72rem; flex-shrink:0; }
+        .perks { display:flex; flex-direction:column; gap:.35rem; margin-bottom:1.15rem; background:var(--bg-elevated); border:1px solid var(--border); border-radius:8px; padding:.65rem .85rem; }
+        .perk { display:flex; align-items:center; gap:.45rem; font-size:.76rem; color:var(--text-secondary); }
+        .perk i { color:var(--green); font-size:.7rem; flex-shrink:0; }
 
         /* ALERT */
         .alert { padding:.75rem .9rem; border-radius:8px; font-size:.82rem; font-weight:500; display:flex; align-items:flex-start; gap:.45rem; margin-bottom:1rem; }
@@ -66,13 +76,13 @@
 
         /* FORM ROW — responsive */
         .form-row { display:grid; grid-template-columns:1fr 1fr; gap:.85rem; }
-        .form-group { margin-bottom:.9rem; }
-        .form-label { display:block; font-size:.72rem; font-weight:600; color:var(--text-secondary); margin-bottom:.35rem; text-transform:uppercase; letter-spacing:.05em; }
+        .form-group { margin-bottom:.85rem; }
+        .form-label { display:block; font-size:.72rem; font-weight:600; color:var(--text-secondary); margin-bottom:.32rem; text-transform:uppercase; letter-spacing:.05em; }
         .input-wrap { position:relative; }
         .input-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:.82rem; pointer-events:none; transition:color .2s; }
         .form-control {
             width:100%; background:var(--bg-elevated); border:1px solid var(--border); border-radius:8px;
-            padding:.7rem .95rem .7rem 2.45rem; color:var(--text-primary); font-family:inherit;
+            padding:.68rem .95rem .68rem 2.45rem; color:var(--text-primary); font-family:inherit;
             font-size:.875rem; outline:none; transition:all .2s; -webkit-appearance:none;
         }
         .form-control:focus { border-color:var(--primary); box-shadow:0 0 0 3px var(--primary-glow); }
@@ -87,7 +97,7 @@
         .pwd-toggle:hover { color:var(--primary); }
 
         /* Strength */
-        .pwd-strength { margin-top:.45rem; }
+        .pwd-strength { margin-top:.4rem; }
         .strength-bar { display:flex; gap:3px; margin-bottom:.25rem; }
         .seg { height:3px; flex:1; border-radius:2px; background:var(--border); transition:background .3s; }
         .seg.weak   { background:var(--red); }
@@ -97,15 +107,15 @@
         .strength-txt { font-size:.68rem; color:var(--text-muted); }
 
         /* Terms */
-        .terms-check { display:flex; align-items:flex-start; gap:.5rem; font-size:.76rem; color:var(--text-secondary); margin-bottom:1.15rem; line-height:1.5; }
+        .terms-check { display:flex; align-items:flex-start; gap:.5rem; font-size:.75rem; color:var(--text-secondary); margin-bottom:1.15rem; line-height:1.5; }
         .terms-check input[type="checkbox"] { accent-color:var(--primary); width:14px; height:14px; margin-top:2px; flex-shrink:0; }
         .terms-check a { color:var(--primary); text-decoration:none; }
         .terms-check a:hover { text-decoration:underline; }
 
         /* Submit */
         .btn-submit {
-            width:100%; padding:.8rem; background:linear-gradient(135deg,#059669,var(--green));
-            border:none; border-radius:8px; color:#fff; font-family:inherit; font-size:.9rem; font-weight:700;
+            width:100%; padding:.78rem; background:linear-gradient(135deg,#059669,var(--green));
+            border:none; border-radius:8px; color:#fff; font-family:inherit; font-size:.88rem; font-weight:700;
             cursor:pointer; transition:all .25s; box-shadow:0 0 20px var(--green-glow);
             display:flex; align-items:center; justify-content:center; gap:.45rem;
             min-height: 44px;
@@ -113,9 +123,9 @@
         .btn-submit:hover { transform:translateY(-2px); box-shadow:0 5px 26px var(--green-glow); }
         .btn-submit:active { transform:translateY(0); }
 
-        .divider { display:flex; align-items:center; gap:.8rem; margin:1.15rem 0; color:var(--text-muted); font-size:.74rem; }
+        .divider { display:flex; align-items:center; gap:.8rem; margin:1rem 0; color:var(--text-muted); font-size:.74rem; }
         .divider::before,.divider::after { content:''; flex:1; height:1px; background:var(--border); }
-        .auth-footer { text-align:center; font-size:.82rem; color:var(--text-secondary); }
+        .auth-footer { text-align:center; font-size:.8rem; color:var(--text-secondary); }
         .auth-footer a { color:var(--primary); text-decoration:none; font-weight:600; }
         .auth-footer a:hover { text-decoration:underline; }
 
@@ -131,8 +141,8 @@
         @media (max-width: 480px) {
             nav { padding: .75rem 1rem; }
             main { padding: 1.25rem .75rem; }
-            .auth-card { padding: 1.5rem 1.15rem; border-radius: 12px; }
-            .auth-title { font-size: 1.28rem; }
+            .auth-card { padding: 1.4rem 1.1rem; border-radius: 12px; }
+            .auth-title { font-size: 1.25rem; }
             .form-control { font-size: 16px; } /* Prevents iOS auto-zoom */
         }
     </style>
@@ -157,13 +167,18 @@
     <div class="auth-wrapper">
         <div class="auth-card">
             <div class="auth-icon"><i class="fas fa-user-plus"></i></div>
-            <h1 class="auth-title">Create Your Account</h1>
-            <p class="auth-subtitle">Join DataSphere — Start analysing your data in minutes</p>
+            <h1 class="auth-title">Create Account</h1>
+            <p class="auth-subtitle">DataSphere Analytics Demonstration</p>
+
+            <div class="demo-banner">
+                <i class="fas fa-info-circle" style="color:#34d399; margin-right:4px;"></i>
+                <strong>Portfolio Showcase:</strong> For testing session authentication. Please use a fictional password.
+            </div>
 
             <div class="perks">
-                <div class="perk"><i class="fas fa-check-circle"></i> Free forever — no credit card required</div>
-                <div class="perk"><i class="fas fa-check-circle"></i> AI-powered insights on your data instantly</div>
-                <div class="perk"><i class="fas fa-check-circle"></i> Secure, SHA-256 encrypted data storage</div>
+                <div class="perk"><i class="fas fa-check-circle"></i> Free portfolio access &amp; instant visualization</div>
+                <div class="perk"><i class="fas fa-check-circle"></i> Automated AI insights &amp; statistical summaries</div>
+                <div class="perk"><i class="fas fa-check-circle"></i> Local session storage — zero data sharing</div>
             </div>
 
             {% with messages = get_flashed_messages(with_categories=true) %}
@@ -179,14 +194,14 @@
                     <div class="form-group">
                         <label class="form-label" for="full_name">Full Name</label>
                         <div class="input-wrap">
-                            <input type="text" id="full_name" name="full_name" class="form-control" placeholder="John Doe" required autocomplete="name" value="{{ request.form.get('full_name','') }}">
+                            <input type="text" id="full_name" name="full_name" class="form-control" placeholder="Jane Doe" required autocomplete="name" value="{{ request.form.get('full_name','') }}">
                             <i class="fas fa-id-card input-icon"></i>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="username">Username</label>
                         <div class="input-wrap">
-                            <input type="text" id="username" name="username" class="form-control" placeholder="johndoe" required autocomplete="username" value="{{ request.form.get('username','') }}" oninput="validateUsername(this)">
+                            <input type="text" id="username" name="username" class="form-control" placeholder="janedoe" required autocomplete="username" value="{{ request.form.get('username','') }}" oninput="validateUsername(this)">
                             <i class="fas fa-at input-icon"></i>
                         </div>
                         <div class="field-err" id="usernameErr">Min 3 characters required.</div>
@@ -194,9 +209,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="email">Work Email</label>
+                    <label class="form-label" for="email">Email Address</label>
                     <div class="input-wrap">
-                        <input type="email" id="email" name="email" class="form-control" placeholder="you@company.com" required autocomplete="email" value="{{ request.form.get('email','') }}">
+                        <input type="email" id="email" name="email" class="form-control" placeholder="name@example.com" required autocomplete="email" value="{{ request.form.get('email','') }}">
                         <i class="fas fa-envelope input-icon"></i>
                     </div>
                 </div>
@@ -229,19 +244,23 @@
 
                 <div class="terms-check">
                     <input type="checkbox" id="terms" name="terms" required>
-                    <label for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+                    <label for="terms">I agree to the <a href="/terms">Terms of Service</a> and <a href="/privacy">Privacy Policy</a></label>
                 </div>
 
-                <button type="submit" class="btn-submit"><i class="fas fa-rocket"></i> Create My Free Account</button>
+                <button type="submit" class="btn-submit"><i class="fas fa-rocket"></i> Create Demonstration Account</button>
             </form>
 
             <div class="divider">already have an account?</div>
-            <div class="auth-footer"><a href="/login"><i class="fas fa-sign-in-alt" style="margin-right:.25rem;"></i>Sign in instead</a></div>
+            <div class="auth-footer"><a href="/login"><i class="fas fa-sign-in-alt" style="margin-right:.25rem;"></i>Sign in or use 1-Click Demo</a></div>
         </div>
     </div>
 </main>
 
-<footer>&copy; 2024 DataSphere Analytics &nbsp;·&nbsp;<a href="#">Privacy</a> &nbsp;·&nbsp;<a href="#">Terms</a></footer>
+<footer>
+    &copy; 2026 DataSphere Analytics • Demonstration Project &nbsp;·&nbsp;
+    <a href="/privacy">Privacy Policy</a> &nbsp;·&nbsp;
+    <a href="/terms">Terms of Service</a>
+</footer>
 
 <script>
 function togglePwd(id, btn) {

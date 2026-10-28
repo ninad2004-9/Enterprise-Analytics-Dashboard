@@ -40,6 +40,17 @@ def init_db():
         )
     ''')
 
+    # Seed default demo account for instant portfolio/reviewer evaluation
+    cursor.execute("SELECT id FROM users WHERE username = 'demo'")
+    if not cursor.fetchone():
+        demo_salt = "datasphere_enterprise_salt_2024"
+        demo_pwd_hashed = hashlib.sha256(f"{demo_salt}Demo12345{demo_salt}".encode()).hexdigest()
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        cursor.execute('''
+            INSERT INTO users (full_name, username, email, password, created_at)
+            VALUES (?, ?, ?, ?, ?)
+        ''', ("Demo Reviewer", "demo", "demo@datasphere.local", demo_pwd_hashed, now))
+
     conn.commit()
     conn.close()
 

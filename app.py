@@ -48,7 +48,7 @@ server.template_folder = os.path.join(os.path.dirname(__file__), 'templates')
 @server.before_request
 def require_login():
     """Redirect unauthenticated users away from /dashboard/"""
-    public_paths = ['/', '/login', '/register', '/logout', '/favicon.ico']
+    public_paths = ['/', '/login', '/register', '/logout', '/demo-login', '/privacy', '/terms', '/favicon.ico']
     path = request.path
 
     # Allow public paths and static assets
@@ -57,19 +57,51 @@ def require_login():
 
     # Protect dashboard
     if path.startswith('/dashboard') and 'user_id' not in session:
-        flash('Please sign in to access the dashboard.', 'error')
+        flash('Please sign in or use Demo Access to view the dashboard.', 'error')
         return redirect(url_for('login'))
 
     return None
 
+@server.after_request
+def set_security_headers(response):
+    """Add standard security headers for browser protection."""
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    return response
+
 # ===============================
-# FLASK ROUTES — Landing, Login, Register
+# FLASK ROUTES — Landing, Login, Register, Demo, Legal
 # ===============================
 
 @server.route('/')
 def landing():
     """Landing page."""
     return render_template('landing.html')
+
+
+@server.route('/privacy')
+def privacy():
+    """Privacy policy disclosure."""
+    return render_template('privacy.html')
+
+
+@server.route('/terms')
+def terms():
+    """Terms of service disclosure."""
+    return render_template('terms.html')
+
+
+@server.route('/demo-login')
+def demo_login():
+    """One-click instant demo access for recruiters and reviewers."""
+    session['user_id']   = 1
+    session['username']  = 'demo'
+    session['full_name'] = 'Demo Reviewer'
+    session['email']     = 'demo@datasphere.local'
+    flash('Logged in as Demo Reviewer! Explore all dashboard features freely.', 'success')
+    return redirect('/dashboard/')
 
 
 @server.route('/login', methods=['GET', 'POST'])

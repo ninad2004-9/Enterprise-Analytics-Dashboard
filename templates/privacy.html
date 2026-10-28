@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy — DataSphere Analytics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        :root {
+            --bg-base:     #0a0d14; --bg-surface: #111827; --bg-elevated:#1a2234;
+            --primary:     #4f8ef7; --primary-dark:#2563eb; --primary-bright:#60a5fa;
+            --border:      #1e293b; --text-primary:#f1f5f9; --text-secondary:#94a3b8; --text-muted:#64748b;
+        }
+        body {
+            font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+            background:var(--bg-base); color:var(--text-primary);
+            line-height:1.65; -webkit-font-smoothing:antialiased;
+        }
+        nav {
+            padding:1rem 1.5rem; border-bottom:1px solid var(--border);
+            background:rgba(10,13,20,.95); display:flex; align-items:center; justify-content:space-between;
+        }
+        .nav-brand { display:flex; align-items:center; gap:.55rem; text-decoration:none; color:var(--text-primary); font-weight:800; }
+        .nav-logo-box {
+            width:30px; height:30px; border-radius:7px; background:linear-gradient(145deg,#1e40af,#3b82f6);
+            display:flex; align-items:center; justify-content:center;
+        }
+        .nav-logo-box svg { width:16px; height:16px; }
+        .container { max-width:800px; margin:2.5rem auto; padding:0 1.5rem; }
+        .card { background:var(--bg-surface); border:1px solid var(--border); border-radius:12px; padding:2rem; }
+        h1 { font-size:1.8rem; font-weight:800; margin-bottom:.5rem; }
+        .updated { font-size:.85rem; color:var(--text-muted); margin-bottom:1.5rem; }
+        h2 { font-size:1.15rem; font-weight:700; margin:1.5rem 0 .5rem; color:var(--primary-bright); }
+        p { color:var(--text-secondary); font-size:.92rem; margin-bottom:1rem; }
+        ul { color:var(--text-secondary); font-size:.92rem; margin:0 0 1rem 1.25rem; }
+        li { margin-bottom:.35rem; }
+        .notice {
+            background:rgba(79,142,247,.1); border-left:3px solid var(--primary);
+            padding:.85rem 1rem; border-radius:6px; margin-bottom:1.5rem; font-size:.88rem; color:var(--text-primary);
+        }
+        footer { border-top:1px solid var(--border); padding:1.5rem; text-align:center; color:var(--text-muted); font-size:.8rem; }
+        a { color:var(--primary); text-decoration:none; }
+        a:hover { text-decoration:underline; }
+    </style>
+</head>
+<body>
+<nav>
+    <a href="/" class="nav-brand">
+        <div class="nav-logo-box">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 8L12 4L19 8L12 20L5 8Z" fill="rgba(255,255,255,.12)" stroke="rgba(255,255,255,.55)" stroke-width="1"/><path d="M5 8H19" stroke="rgba(255,255,255,.4)" stroke-width="1"/><path d="M8 8L12 4L16 8L12 14L8 8Z" fill="rgba(255,255,255,.55)"/></svg>
+        </div>
+        <span>DataSphere Analytics</span>
+    </a>
+    <a href="/login" style="font-size:.85rem;">Back to Sign In</a>
+</nav>
+
+<div class="container">
+    <div class="card">
+        <div class="notice">
+            <i class="fas fa-info-circle me-1"></i>
+            <strong>Educational &amp; Portfolio Showcase:</strong> DataSphere is an open-source demonstration application built for technical portfolio and data visualization purposes.
+        </div>
+
+        <h1>Privacy Policy</h1>
+        <div class="updated">Last updated: October 2026</div>
+
+        <h2>1. Information We Collect</h2>
+        <p>This demo application allows users to register an account to test authenticated dashboard sessions. We only store:</p>
+        <ul>
+            <li>Display name or username chosen by the user</li>
+            <li>Email address (for demonstration login identifiers only)</li>
+            <li>Cryptographically salted password hash (we never store plain-text passwords)</li>
+            <li>Uploaded sample dataset files, processed entirely in-memory or session storage during your browser session</li>
+        </ul>
+
+        <h2>2. How Information is Used</h2>
+        <p>Information entered into this application is used solely to authenticate your demonstration session and render interactive analytical charts. We do not sell, rent, commercialize, or share your data with any third-party advertisers or data brokers.</p>
+
+        <h2>3. Data Retention &amp; Security</h2>
+        <p>Account records are held in a local SQLite database for test session management. Uploaded CSV/Excel files are processed in-memory during user sessions. Since this is a public demonstration project, <strong>users are advised not to enter real-world proprietary passwords or private business records</strong>.</p>
+
+        <h2>4. Open Source &amp; Contact</h2>
+        <p>For questions or source code review, please contact the project repository maintainer or visit the <a href="/">homepage</a>.</p>
+    </div>
+</div>
+
+<footer>
+    &copy; 2026 DataSphere Analytics • Demonstration Portfolio Project
+</footer>
+</body>
+</html>
