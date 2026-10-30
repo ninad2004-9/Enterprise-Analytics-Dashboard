@@ -51,8 +51,8 @@ def require_login():
     public_paths = ['/', '/login', '/register', '/logout', '/demo-login', '/privacy', '/terms', '/favicon.ico']
     path = request.path
 
-    # Allow public paths and static assets
-    if path in public_paths or path.startswith('/static') or path.startswith('/_dash'):
+    # Allow public paths, oauth, and static assets
+    if path in public_paths or path.startswith('/auth/oauth') or path.startswith('/static') or path.startswith('/_dash'):
         return None
 
     # Protect dashboard
@@ -96,33 +96,90 @@ def terms():
 @server.route('/demo-login')
 def demo_login():
     """One-click instant demo access for recruiters and reviewers."""
-    session['user_id']   = 1
-    session['username']  = 'demo'
-    session['full_name'] = 'Demo Reviewer'
-    session['email']     = 'demo@datasphere.local'
+    import sqlite3
+    try:
+        conn = sqlite3.connect(auth_module.DB_PATH)
+        cur = conn.cursor()
+        cur.execute("SELECT id, full_name, username, email FROM users WHERE username = 'demo'")
+        row = cur.fetchone()
+        conn.close()
+        if row:
+            session.clear()
+            session['user_id']   = row[0]
+            session['full_name'] = row[1]
+            session['username']  = row[2]
+            session['email']     = row[3]
+        else:
+            session.clear()
+            session['user_id']   = 999
+            session['username']  = 'demo'
+            session['full_name'] = 'Demo Reviewer'
+            session['email']     = 'demo@datasphere.local'
+    except Exception:
+        session.clear()
+        session['user_id']   = 999
+        session['username']  = 'demo'
+        session['full_name'] = 'Demo Reviewer'
+        session['email']     = 'demo@datasphere.local'
+
     flash('Logged in as Demo Reviewer! Explore all dashboard features freely.', 'success')
+    return redirect('/dashboard/')
+
+
+@server.route('/auth/oauth/<provider>')
+def oauth_login(provider):
+    """Instant simulated OAuth sign-in for Google, GitHub, Microsoft."""
+    prov = provider.lower()
+    mapping = {
+        'google':    ('Google User', 'google_user', 'user.google@datasphere.local'),
+        'github':    ('GitHub Developer', 'github_user', 'dev.github@datasphere.local'),
+        'microsoft': ('Microsoft Enterprise', 'microsoft_user', 'enterprise.ms@datasphere.local'),
+    }
+    if prov not in mapping:
+        flash('Unsupported authentication provider.', 'error')
+        return redirect('/login')
+
+    fn, un, em = mapping[prov]
+    import sqlite3
+    conn = sqlite3.connect(auth_module.DB_PATH)
+    cur = conn.cursor()
+    cur.execute("SELECT id, full_name, username, email FROM users WHERE username = ?", (un,))
+    row = cur.fetchone()
+    if not row:
+        dummy_pwd = auth_module.hash_password("datasphere_oauth_token_verified")
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        cur.execute("INSERT INTO users (full_name, username, email, password, created_at) VALUES (?, ?, ?, ?, ?)",
+                    (fn, un, em, dummy_pwd, now))
+        conn.commit()
+        cur.execute("SELECT id, full_name, username, email FROM users WHERE username = ?", (un,))
+        row = cur.fetchone()
+    conn.close()
+
+    session.clear()
+    session['user_id']   = row[0]
+    session['full_name'] = row[1]
+    session['username']  = row[2]
+    session['email']     = row[3]
+    flash(f"Successfully authenticated via {provider.capitalize()}! Welcome, {row[1]}.", 'success')
     return redirect('/dashboard/')
 
 
 @server.route('/login', methods=['GET', 'POST'])
 def login():
     """Login page — GET renders form, POST authenticates."""
-    # Already logged in → go to dashboard
-    if 'user_id' in session:
-        return redirect('/dashboard/')
-
     if request.method == 'POST':
         identifier = request.form.get('identifier', '').strip()
         password   = request.form.get('password', '')
 
         if not identifier or not password:
             flash('Please fill in all fields.', 'error')
-            return render_template('login.html')
+            return render_template('login.html', current_user=session.get('username'))
 
         ip = request.remote_addr
         success, message, user_data = auth_module.login_user(identifier, password, ip)
 
         if success:
+            session.clear()
             session['user_id']   = user_data['id']
             session['username']  = user_data['username']
             session['full_name'] = user_data['full_name']
@@ -131,17 +188,14 @@ def login():
             return redirect('/dashboard/')
         else:
             flash(message, 'error')
-            return render_template('login.html')
+            return render_template('login.html', current_user=session.get('username'))
 
-    return render_template('login.html')
+    return render_template('login.html', current_user=session.get('username'))
 
 
 @server.route('/register', methods=['GET', 'POST'])
 def register():
     """Register page — GET renders form, POST creates account."""
-    if 'user_id' in session:
-        return redirect('/dashboard/')
-
     if request.method == 'POST':
         full_name        = request.form.get('full_name', '').strip()
         username         = request.form.get('username', '').strip()

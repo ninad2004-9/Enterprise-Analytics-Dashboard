@@ -51,6 +51,22 @@ def init_db():
             VALUES (?, ?, ?, ?, ?)
         ''', ("Demo Reviewer", "demo", "demo@datasphere.local", demo_pwd_hashed, now))
 
+    # Seed OAuth provider dummy records if needed so OAuth 1-click works instantly
+    oauth_users = [
+        ("Google User", "google_user", "google_demo@datasphere.local"),
+        ("GitHub Developer", "github_user", "github_demo@datasphere.local"),
+        ("Microsoft Enterprise", "microsoft_user", "ms_demo@datasphere.local"),
+    ]
+    for fn, un, em in oauth_users:
+        cursor.execute("SELECT id FROM users WHERE username = ?", (un,))
+        if not cursor.fetchone():
+            dummy_pwd = hashlib.sha256("datasphere_enterprise_oauth_dummy".encode()).hexdigest()
+            now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            cursor.execute('''
+                INSERT INTO users (full_name, username, email, password, created_at)
+                VALUES (?, ?, ?, ?, ?)
+            ''', (fn, un, em, dummy_pwd, now))
+
     conn.commit()
     conn.close()
 
