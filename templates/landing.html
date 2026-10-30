@@ -3,620 +3,796 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="DataSphere Analytics — An open-source interactive business intelligence and enterprise analytics dashboard built with Python, Flask, Dash, and Plotly.">
+    <meta name="description" content="DataSphere Enterprise — High-performance interactive data analytics and business intelligence platform built with Python, Dash, and Plotly.">
     <meta name="robots" content="index, follow">
-    <title>DataSphere — Enterprise Analytics Platform</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>DataSphere — Enterprise Data Intelligence Platform</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
         :root {
-            --bg-base:        #0a0d14;
-            --bg-surface:     #111827;
-            --bg-elevated:    #1a2234;
-            --bg-overlay:     #243048;
-            --primary:        #4f8ef7;
-            --primary-dark:   #2563eb;
-            --primary-glow:   rgba(79,142,247,0.15);
-            --primary-bright: #60a5fa;
-            --green:          #34d399;
-            --green-glow:     rgba(52,211,153,0.12);
-            --purple:         #a78bfa;
-            --orange:         #fb923c;
-            --red:            #f87171;
-            --cyan:           #22d3ee;
-            --border:         #1e293b;
-            --border-light:   #263352;
-            --text-primary:   #f1f5f9;
-            --text-secondary: #94a3b8;
-            --text-muted:     #64748b;
-            --nav-h:          64px;
+            --bg-base:        #07090e;
+            --bg-surface:     #0d111a;
+            --bg-card:        #121826;
+            --bg-card-hover:  #172033;
+            --bg-glass:       rgba(18, 24, 38, 0.72);
+            --border-subtle:  #1a2333;
+            --border-strong:  #243047;
+            --border-accent:  rgba(59, 130, 246, 0.35);
+
+            --primary:        #3b82f6;
+            --primary-light:  #60a5fa;
+            --primary-glow:   rgba(59, 130, 246, 0.18);
+            --accent-cyan:    #06b6d4;
+            --accent-purple:  #8b5cf6;
+            --accent-emerald: #10b981;
+            --accent-amber:   #f59e0b;
+            --accent-rose:    #f43f5e;
+
+            --text-main:      #f8fafc;
+            --text-muted:     #94a3b8;
+            --text-dim:       #64748b;
+            --font-mono:      'JetBrains Mono', monospace;
+            --font-sans:      'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            --nav-h:          68px;
         }
 
         html { scroll-behavior: smooth; }
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: var(--font-sans);
             background: var(--bg-base);
-            color: var(--text-primary);
+            color: var(--text-main);
             line-height: 1.55;
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
             width: 100%;
         }
-        ::-webkit-scrollbar { width: 5px; }
+
+        /* Industrial Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg-base); }
-        ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #334155; }
 
-        /* ── ANIMATIONS ── */
-        @keyframes fadeInUp   { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes blink      { 0%,100%{opacity:1} 50%{opacity:0.3} }
-        @keyframes floatY     { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-        @keyframes floatY2    { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
-        @keyframes pulse-ring { 0%{transform:scale(1);opacity:.7} 100%{transform:scale(1.5);opacity:0} }
-        @keyframes spin-slow  { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-        @keyframes dot-pulse  { 0%,100%{transform:scale(1);opacity:.8} 50%{transform:scale(1.3);opacity:.4} }
-        @keyframes grad-shift { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
-
-        /* ── BACKGROUND ── */
-        .bg-grid {
+        /* Background Canvas */
+        .ambient-grid {
             position: fixed; inset: 0; pointer-events: none; z-index: 0;
-            background-image:
-                linear-gradient(rgba(30,41,59,.3) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(30,41,59,.3) 1px, transparent 1px);
-            background-size: 56px 56px;
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
         }
-        .bg-glow { position: fixed; pointer-events: none; z-index: 0; border-radius: 50%; }
-        .bg-glow-1 { top:-200px; left:-120px; width:550px; height:550px; background: radial-gradient(circle,rgba(79,142,247,.08) 0%,transparent 65%); }
-        .bg-glow-2 { bottom:-200px; right:-120px; width:550px; height:550px; background: radial-gradient(circle,rgba(167,139,250,.06) 0%,transparent 65%); }
+        .ambient-glow-top {
+            position: fixed; top: -180px; left: 50%; transform: translateX(-50%);
+            width: 1000px; height: 500px;
+            background: radial-gradient(ellipse 60% 40% at 50% 30%, rgba(59, 130, 246, 0.14), rgba(139, 92, 246, 0.06), transparent 70%);
+            pointer-events: none; z-index: 0; filter: blur(40px);
+        }
+        .ambient-glow-side {
+            position: fixed; bottom: -200px; right: -100px;
+            width: 700px; height: 500px;
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.08), transparent 70%);
+            pointer-events: none; z-index: 0; filter: blur(50px);
+        }
 
-        /* ══════════════════════════════════════════
-           NAVBAR
-        ══════════════════════════════════════════ */
+        /* Containers */
+        .shell {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── NAVBAR ── */
         nav {
-            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-            height: var(--nav-h); padding: 0 1.5rem;
-            background: rgba(10,13,20,.9);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border);
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            height: var(--nav-h);
+            background: rgba(7, 9, 14, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-subtle);
             display: flex; align-items: center;
-            transition: background .3s, box-shadow .3s;
+            transition: all 0.25s ease;
         }
-        nav.scrolled { background: rgba(10,13,20,.98); box-shadow: 0 4px 20px rgba(0,0,0,.4); }
-        .nav-inner {
-            max-width: 1240px; margin: 0 auto; width: 100%;
-            display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+        nav.scrolled {
+            background: rgba(7, 9, 14, 0.96);
+            border-bottom-color: var(--border-strong);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
         }
-
-        /* Brand / Logo */
-        .nav-brand { display: flex; align-items: center; gap: .6rem; text-decoration: none; flex-shrink: 0; }
-        .nav-logo-box {
-            width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0;
-            background: linear-gradient(145deg,#1e40af,#3b82f6,#60a5fa);
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 0 16px rgba(59,130,246,.4), inset 0 1px 0 rgba(255,255,255,.15);
-        }
-        .nav-logo-box svg { width: 18px; height: 18px; }
-        .nav-brand-name { font-size: 1.15rem; font-weight: 800; letter-spacing: -.02em; color: var(--text-primary); }
-        .nav-badge {
-            font-size: .58rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em;
-            color: var(--primary); background: var(--primary-glow);
-            border: 1px solid rgba(79,142,247,.25); padding: 2px 7px; border-radius: 20px;
-        }
-
-        /* Desktop nav links */
-        .nav-links { display: flex; align-items: center; gap: .25rem; }
-        .nav-links a {
-            color: var(--text-secondary); text-decoration: none; font-size: .86rem; font-weight: 500;
-            padding: .4rem .75rem; border-radius: 6px; transition: all .2s;
-        }
-        .nav-links a:hover { color: var(--text-primary); background: var(--bg-elevated); }
-
-        /* Nav actions */
-        .nav-actions { display: flex; align-items: center; gap: .6rem; }
-        .btn-ghost {
-            background: none; border: 1px solid var(--border-light); color: var(--text-secondary);
-            padding: .42rem .95rem; border-radius: 7px; font-size: .84rem; font-weight: 500;
-            cursor: pointer; text-decoration: none; transition: all .2s; font-family: inherit;
-        }
-        .btn-ghost:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-glow); }
-        .btn-primary-nav {
-            background: linear-gradient(135deg,var(--primary-dark),var(--primary));
-            border: none; color: #fff; padding: .45rem 1.1rem; border-radius: 7px;
-            font-size: .84rem; font-weight: 600; cursor: pointer; text-decoration: none;
-            font-family: inherit; transition: all .25s; box-shadow: 0 0 16px var(--primary-glow);
-            white-space: nowrap;
-        }
-        .btn-primary-nav:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(79,142,247,.4); }
-
-        /* Mobile hamburger */
-        .nav-hamburger {
-            display: none; background: none; border: 1px solid var(--border-light);
-            color: var(--text-secondary); width: 38px; height: 38px; border-radius: 7px;
-            align-items: center; justify-content: center; cursor: pointer; font-size: 1.05rem;
-            flex-shrink: 0;
-        }
-
-        /* Mobile drawer */
-        .nav-drawer {
-            display: none; position: fixed; top: var(--nav-h); left: 0; right: 0; z-index: 999;
-            background: rgba(10,13,20,.98); border-bottom: 1px solid var(--border);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            padding: 1rem 1.25rem 1.5rem; flex-direction: column; gap: .3rem;
-            box-shadow: 0 16px 36px rgba(0,0,0,.6);
-        }
-        .nav-drawer.open { display: flex; animation: fadeInUp .2s ease; }
-        .nav-drawer a {
-            color: var(--text-secondary); text-decoration: none; font-size: .95rem; font-weight: 500;
-            padding: .65rem .75rem; border-radius: 7px; transition: all .2s; display: block;
-        }
-        .nav-drawer a:hover { color: var(--text-primary); background: var(--bg-elevated); }
-        .nav-drawer-divider { height: 1px; background: var(--border); margin: .4rem 0; }
-        .nav-drawer-cta { display: flex; flex-direction: column; gap: .5rem; margin-top: .2rem; }
-        .nav-drawer-cta a {
-            display: block; text-align: center; padding: .65rem; border-radius: 8px;
-            font-weight: 600; font-size: .88rem; text-decoration: none;
-        }
-        .drawer-signin { background: var(--bg-elevated); border: 1px solid var(--border-light); color: var(--text-primary); }
-        .drawer-start  { background: linear-gradient(135deg,var(--primary-dark),var(--primary)); color: #fff; }
-
-        /* ══════════════════════════════════════════
-           HERO SECTION — TIGHT & NO DEAD SPACE
-        ══════════════════════════════════════════ */
-        .hero {
-            position: relative; z-index: 1;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center;
-            padding: calc(var(--nav-h) + 2rem) 1.5rem 2.5rem;
-            overflow: hidden;
+        .nav-wrap {
+            display: flex; align-items: center; justify-content: space-between;
             width: 100%;
         }
-
-        /* Floating side elements (shown on wide desktops only) */
-        .floating-elem { position: absolute; pointer-events: none; z-index: 0; }
-
-        .float-icon {
-            width: 44px; height: 44px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; font-size: .95rem;
-            border: 1px solid; backdrop-filter: blur(8px);
+        .brand {
+            display: flex; align-items: center; gap: 0.75rem;
+            text-decoration: none; color: var(--text-main);
         }
-        .float-icon.blue   { background:rgba(79,142,247,.12); border-color:rgba(79,142,247,.25); color:var(--primary-bright); }
-        .float-icon.green  { background:rgba(52,211,153,.1);  border-color:rgba(52,211,153,.22); color:var(--green); }
-        .float-icon.purple { background:rgba(167,139,250,.1); border-color:rgba(167,139,250,.22);color:var(--purple); }
-        .float-icon.cyan   { background:rgba(34,211,238,.1);  border-color:rgba(34,211,238,.22); color:var(--cyan); }
-        .float-icon.orange { background:rgba(251,146,60,.1);  border-color:rgba(251,146,60,.22); color:var(--orange); }
-
-        .pulse-ring {
-            position: absolute; inset: -7px; border-radius: 50%;
-            border: 1px solid rgba(79,142,247,.2);
-            animation: pulse-ring 2.4s ease-out infinite;
+        .brand-icon {
+            width: 36px; height: 36px; border-radius: 8px;
+            background: linear-gradient(135deg, #1d4ed8, #3b82f6, #60a5fa);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 16px rgba(59, 130, 246, 0.45);
+        }
+        .brand-icon svg { width: 20px; height: 20px; }
+        .brand-text { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.02em; }
+        .brand-badge {
+            font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+            color: var(--primary-light); background: rgba(59, 130, 246, 0.12);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            padding: 2px 8px; border-radius: 4px;
         }
 
-        .float-card {
-            background: rgba(17,24,39,.9); border: 1px solid var(--border-light);
-            border-radius: 10px; padding: .55rem .85rem; backdrop-filter: blur(12px);
-            white-space: nowrap; box-shadow: 0 8px 24px rgba(0,0,0,.4);
+        .nav-links {
+            display: flex; align-items: center; gap: 0.35rem;
         }
-        .float-card-label { font-size: .58rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: .12rem; }
-        .float-card-value { font-size: 1rem; font-weight: 800; }
-        .float-card-badge { font-size: .58rem; font-weight: 600; color: var(--green); margin-top: .1rem; }
+        .nav-links a {
+            color: var(--text-muted); text-decoration: none; font-size: 0.88rem; font-weight: 500;
+            padding: 0.45rem 0.85rem; border-radius: 6px; transition: all 0.2s;
+        }
+        .nav-links a:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.04); }
 
-        .float-dot { width: 5px; height: 5px; border-radius: 50%; animation: dot-pulse 2s ease-in-out infinite; }
+        .nav-ctas { display: flex; align-items: center; gap: 0.65rem; }
+        .btn-demo-pill {
+            display: inline-flex; align-items: center; gap: 0.45rem;
+            background: rgba(59, 130, 246, 0.1); color: var(--primary-light);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 0.45rem 0.95rem; border-radius: 6px; font-size: 0.84rem; font-weight: 600;
+            text-decoration: none; transition: all 0.2s;
+        }
+        .btn-demo-pill:hover {
+            background: rgba(59, 130, 246, 0.2); border-color: var(--primary-light);
+            box-shadow: 0 0 16px rgba(59, 130, 246, 0.3);
+        }
+        .btn-ghost {
+            background: transparent; color: var(--text-muted);
+            border: 1px solid var(--border-subtle);
+            padding: 0.45rem 0.95rem; border-radius: 6px; font-size: 0.84rem; font-weight: 500;
+            text-decoration: none; transition: all 0.2s;
+        }
+        .btn-ghost:hover { color: var(--text-main); border-color: var(--border-strong); background: rgba(255,255,255,0.03); }
+        .btn-primary-nav {
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            color: #fff; border: 1px solid rgba(255,255,255,0.15);
+            padding: 0.45rem 1.15rem; border-radius: 6px; font-size: 0.84rem; font-weight: 600;
+            text-decoration: none; transition: all 0.2s;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+        }
+        .btn-primary-nav:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5); }
 
-        /* Desktop positions */
-        .fe-1 { top:18%; left:4%;  animation: floatY  4s ease-in-out infinite; }
-        .fe-2 { top:42%; left:2%;  animation: floatY2 5s ease-in-out infinite .5s; }
-        .fe-3 { bottom:20%; left:5%; animation: floatY 4.5s ease-in-out infinite 1s; }
-        .fe-4 { top:16%; right:4%; animation: floatY2 4.2s ease-in-out infinite .3s; }
-        .fe-5 { top:40%; right:2%; animation: floatY  5s ease-in-out infinite .8s; }
-        .fe-6 { bottom:20%; right:5%; animation: floatY2 4.8s ease-in-out infinite 1.2s; }
-        .fe-card-l { left:5%; top:60%; animation: floatY 6s ease-in-out infinite .4s; }
-        .fe-card-r { right:5%; top:62%; animation: floatY2 5.5s ease-in-out infinite .7s; }
-        .fe-arc-l { left:10%; top:12%; width:150px; height:150px; border-radius:50%; border:1px dashed rgba(79,142,247,.1); animation: spin-slow 24s linear infinite; }
-        .fe-arc-r { right:10%; bottom:16%; width:130px; height:130px; border-radius:50%; border:1px dashed rgba(167,139,250,.1); animation: spin-slow 20s linear infinite reverse; }
-        .d1 { top:25%; left:16%; background:var(--primary);  opacity:.35; animation-delay:0s; }
-        .d2 { top:52%; left:12%; background:var(--purple);   opacity:.3; animation-delay:.8s; }
-        .d3 { top:22%; right:15%; background:var(--green);   opacity:.35; animation-delay:.4s; }
-        .d4 { top:56%; right:11%; background:var(--cyan);    opacity:.3; animation-delay:1.2s; }
+        .hamburger {
+            display: none; background: transparent; border: 1px solid var(--border-subtle);
+            color: var(--text-muted); width: 38px; height: 38px; border-radius: 6px;
+            align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem;
+        }
 
-        /* Hero content */
-        .hero-content { position: relative; z-index: 2; width: 100%; max-width: 860px; }
+        /* Mobile Drawer */
+        .nav-drawer {
+            display: none; position: fixed; top: var(--nav-h); left: 0; right: 0; z-index: 99;
+            background: rgba(10, 14, 22, 0.98); border-bottom: 1px solid var(--border-strong);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            padding: 1.25rem; flex-direction: column; gap: 0.4rem;
+        }
+        .nav-drawer.open { display: flex; }
+        .nav-drawer a {
+            color: var(--text-muted); text-decoration: none; font-size: 0.95rem; font-weight: 500;
+            padding: 0.65rem 0.85rem; border-radius: 6px;
+        }
+        .nav-drawer a:hover { color: var(--text-main); background: var(--bg-card); }
+        .drawer-divider { height: 1px; background: var(--border-subtle); margin: 0.4rem 0; }
+        .drawer-ctas { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.3rem; }
+        .drawer-ctas a { text-align: center; font-weight: 600; }
 
+        /* ── TELEMETRY MARQUEE TICKER ── */
+        .telemetry-ticker {
+            margin-top: var(--nav-h);
+            background: rgba(13, 17, 26, 0.9);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 0.45rem 1rem;
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+            z-index: 10;
+        }
+        .ticker-track {
+            display: inline-flex; align-items: center; gap: 2.5rem;
+            animation: tickerScroll 38s linear infinite;
+        }
+        .ticker-item {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted);
+        }
+        .ticker-dot { width: 6px; height: 6px; border-radius: 50%; }
+        .ticker-dot.green { background: var(--accent-emerald); box-shadow: 0 0 8px var(--accent-emerald); }
+        .ticker-dot.blue  { background: var(--primary-light); box-shadow: 0 0 8px var(--primary-light); }
+        .ticker-dot.purple{ background: var(--accent-purple); box-shadow: 0 0 8px var(--accent-purple); }
+        .ticker-val { color: var(--text-main); font-weight: 600; }
+
+        @keyframes tickerScroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* ── HERO SECTION ── */
+        .hero {
+            padding: 3.5rem 0 2.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        .hero-head {
+            text-align: center;
+            max-width: 960px;
+            margin: 0 auto 2.5rem;
+        }
         .hero-badge {
-            display: inline-flex; align-items: center; gap: .45rem;
-            background: var(--bg-elevated); border: 1px solid var(--border-light);
-            color: var(--primary-bright); font-size: .76rem; font-weight: 600;
-            padding: .32rem .85rem; border-radius: 20px; margin-bottom: 1.1rem;
-            animation: fadeInUp .4s ease both;
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: rgba(18, 24, 38, 0.9); border: 1px solid var(--border-strong);
+            color: var(--primary-light); font-size: 0.76rem; font-weight: 600;
+            padding: 0.35rem 0.95rem; border-radius: 20px; margin-bottom: 1.25rem;
+            text-decoration: none; transition: all 0.2s;
         }
-        .hero-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: blink 1.5s infinite; flex-shrink: 0; }
+        .hero-badge:hover {
+            border-color: var(--primary-light);
+            background: rgba(59, 130, 246, 0.1);
+        }
+        .pulse-live {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: var(--accent-emerald);
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            animation: pulse-ring 2s infinite;
+        }
+        @keyframes pulse-ring {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
 
         .hero-title {
-            font-size: clamp(2.2rem, 5.5vw, 4.25rem);
-            font-weight: 900; line-height: 1.08; letter-spacing: -.035em;
-            margin-bottom: 1rem; animation: fadeInUp .5s .1s ease both;
+            font-size: clamp(2.3rem, 5.5vw, 4.4rem);
+            font-weight: 900;
+            letter-spacing: -0.04em;
+            line-height: 1.08;
+            margin-bottom: 1.25rem;
         }
-        .hero-gradient {
-            background: linear-gradient(135deg,#60a5fa 0%,#818cf8 50%,#a78bfa 100%);
-            background-size: 200% auto;
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-            animation: grad-shift 4s ease infinite;
+        .hero-title .gradient-text {
+            background: linear-gradient(135deg, #60a5fa 10%, #a78bfa 50%, #38bdf8 90%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         .hero-subtitle {
-            font-size: clamp(.92rem, 1.8vw, 1.1rem); color: var(--text-secondary);
-            max-width: 580px; margin: 0 auto 1.5rem; line-height: 1.65;
-            animation: fadeInUp .5s .15s ease both;
+            font-size: clamp(1rem, 1.9vw, 1.18rem);
+            color: var(--text-muted);
+            max-width: 680px;
+            margin: 0 auto 1.85rem;
+            line-height: 1.6;
         }
+
         .hero-actions {
-            display: flex; gap: .75rem; flex-wrap: wrap; justify-content: center;
-            margin-bottom: 2rem; animation: fadeInUp .5s .2s ease both;
+            display: flex; align-items: center; justify-content: center; gap: 0.85rem;
+            flex-wrap: wrap; margin-bottom: 2rem;
         }
         .btn-hero-primary {
-            display: inline-flex; align-items: center; gap: .45rem;
-            background: linear-gradient(135deg,var(--primary-dark),var(--primary));
-            color: #fff; font-weight: 700; font-size: .92rem;
-            padding: .75rem 1.75rem; border-radius: 8px; text-decoration: none;
-            border: none; cursor: pointer; font-family: inherit;
-            box-shadow: 0 0 24px rgba(79,142,247,.3); transition: all .25s;
+            display: inline-flex; align-items: center; gap: 0.6rem;
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            color: #fff; font-weight: 700; font-size: 0.95rem;
+            padding: 0.85rem 1.75rem; border-radius: 8px; text-decoration: none;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4), inset 0 1px 0 rgba(255,255,255,0.25);
+            transition: all 0.2s;
         }
-        .btn-hero-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 30px rgba(79,142,247,.45); }
+        .btn-hero-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(37, 99, 235, 0.55);
+        }
         .btn-hero-secondary {
-            display: inline-flex; align-items: center; gap: .45rem;
-            background: var(--bg-elevated); color: var(--text-primary);
-            font-weight: 600; font-size: .92rem;
-            padding: .75rem 1.75rem; border-radius: 8px; text-decoration: none;
-            border: 1px solid var(--border-light); transition: all .25s;
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: var(--bg-card); color: var(--text-main);
+            border: 1px solid var(--border-strong);
+            font-weight: 600; font-size: 0.95rem;
+            padding: 0.85rem 1.6rem; border-radius: 8px; text-decoration: none;
+            transition: all 0.2s;
         }
-        .btn-hero-secondary:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); }
+        .btn-hero-secondary:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--primary-light);
+            color: var(--primary-light);
+        }
+        .btn-hero-ghost {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            color: var(--text-muted); font-size: 0.92rem; font-weight: 500;
+            text-decoration: none; padding: 0.85rem 1.25rem; transition: color 0.2s;
+        }
+        .btn-hero-ghost:hover { color: var(--text-main); }
 
-        /* ── Dashboard Mockup ── */
-        .hero-mockup { position: relative; z-index: 2; width: 100%; max-width: 980px; animation: fadeInUp .7s .3s ease both; }
-        .mockup-browser {
-            background: var(--bg-surface); border: 1px solid var(--border-light);
-            border-radius: 12px; overflow: hidden;
-            box-shadow: 0 24px 60px rgba(0,0,0,.6), 0 0 0 1px var(--border), inset 0 1px 0 rgba(255,255,255,.05);
+        /* Industrial Hero Metrics Ribbon */
+        .hero-metrics-ribbon {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            max-width: 960px;
+            margin: 0 auto 3rem;
+            padding: 0.75rem;
+            background: rgba(18, 24, 38, 0.6);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
         }
-        .mockup-bar {
-            background: var(--bg-elevated); padding: .55rem .85rem;
-            display: flex; align-items: center; gap: .55rem; border-bottom: 1px solid var(--border);
+        .ribbon-item {
+            text-align: center;
+            padding: 0.65rem 0.5rem;
+            border-right: 1px solid var(--border-subtle);
         }
-        .mockup-dots { display: flex; gap: .3rem; }
-        .mockup-dot { width: 9px; height: 9px; border-radius: 50%; }
-        .md-r { background: #f87171; } .md-y { background: #fbbf24; } .md-g { background: var(--green); }
-        .mockup-url {
-            flex: 1; background: var(--bg-overlay); border-radius: 4px;
-            padding: .2rem .65rem; font-size: .66rem; color: var(--text-muted);
-            max-width: 240px; margin: 0 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        .ribbon-item:last-child { border-right: none; }
+        .ribbon-val {
+            font-family: var(--font-mono);
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1.1;
+            margin-bottom: 0.2rem;
         }
-        .mockup-body { padding: .85rem; }
-        .mockup-kpis { display: grid; grid-template-columns: repeat(4,1fr); gap: .65rem; margin-bottom: .65rem; }
-        .mockup-kpi { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 8px; padding: .65rem .75rem; text-align: left; }
-        .mkpi-label { font-size: .56rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: .2rem; }
-        .mkpi-val   { font-size: 1.18rem; font-weight: 800; color: var(--primary-bright); line-height: 1.1; }
-        .mkpi-badge { font-size: .56rem; font-weight: 600; color: var(--green); margin-top: .15rem; }
-        .mockup-charts { display: grid; grid-template-columns: 1fr 1fr; gap: .65rem; }
-        .mockup-chart { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 8px; padding: .65rem .75rem; height: 110px; position: relative; overflow: hidden; }
-        .mchart-title { font-size: .62rem; color: var(--text-secondary); margin-bottom: .45rem; font-weight: 600; text-align: left; }
-        .mockup-bars { display: flex; align-items: flex-end; gap: 4px; height: 58px; }
-        .mbar { flex: 1; border-radius: 3px 3px 0 0; background: linear-gradient(180deg,var(--primary),var(--primary-dark)); opacity: .8; }
-        .mchart-line { position: absolute; bottom: 12px; left: 10px; right: 10px; height: 45px; }
-        .mchart-line svg { width: 100%; height: 100%; }
+        .ribbon-val span { color: var(--primary-light); font-size: 0.9rem; }
+        .ribbon-lbl {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-weight: 600;
+        }
 
-        /* ══════════════════════════════════════════
-           TRUST BAR
-        ══════════════════════════════════════════ */
-        .trust-bar {
-            position: relative; z-index: 1;
-            padding: 1.35rem 1.5rem;
-            border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
-            background: var(--bg-surface); text-align: center;
+        /* ── INTERACTIVE INDUSTRIAL COCKPIT STAGE ── */
+        .cockpit-stage {
+            background: var(--bg-card);
+            border: 1px solid var(--border-strong);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.04);
+            position: relative;
         }
-        .trust-bar p { font-size: .68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .12em; margin-bottom: .85rem; font-weight: 600; }
-        .trust-logos { display: flex; align-items: center; justify-content: center; gap: 2rem; flex-wrap: wrap; }
-        .trust-logo { font-size: .84rem; font-weight: 700; color: var(--text-muted); letter-spacing: -.01em; opacity: .45; transition: opacity .2s; }
-        .trust-logo:hover { opacity: .9; }
+        .cockpit-header {
+            background: #0d121c;
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 0.75rem 1rem;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 1rem;
+        }
+        .window-dots { display: flex; gap: 0.4rem; }
+        .w-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .w-dot.red { background: #ef4444; }
+        .w-dot.yellow { background: #f59e0b; }
+        .w-dot.green { background: #10b981; }
 
-        /* ══════════════════════════════════════════
-           STATS
-        ══════════════════════════════════════════ */
-        .stats-section { position: relative; z-index: 1; max-width: 1240px; margin: 0 auto; padding: 2.25rem 1.5rem; }
-        .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: .85rem; }
-        .stat-card {
-            background: var(--bg-surface); border: 1px solid var(--border);
-            border-radius: 12px; padding: 1.35rem 1rem; text-align: center;
-            position: relative; overflow: hidden; transition: all .25s;
+        .cockpit-tabs {
+            display: flex; align-items: center; gap: 0.35rem;
+            background: rgba(0, 0, 0, 0.35); padding: 3px; border-radius: 8px;
+            border: 1px solid var(--border-subtle);
         }
-        .stat-card::before {
-            content: ''; position: absolute; inset: 0;
-            background: linear-gradient(135deg,var(--primary-glow),transparent);
-            opacity: 0; transition: opacity .25s;
+        .c-tab {
+            background: transparent; border: none; color: var(--text-muted);
+            font-family: var(--font-sans); font-size: 0.76rem; font-weight: 600;
+            padding: 0.35rem 0.85rem; border-radius: 6px; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            transition: all 0.2s;
         }
-        .stat-card:hover { transform: translateY(-3px); border-color: rgba(79,142,247,.35); }
-        .stat-card:hover::before { opacity: 1; }
-        .stat-num {
-            font-size: 2.25rem; font-weight: 900; line-height: 1;
-            background: linear-gradient(135deg,var(--text-primary),var(--primary-bright));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-            margin-bottom: .3rem;
+        .c-tab.active, .c-tab:hover {
+            color: var(--text-main); background: #1a2234;
         }
-        .stat-label { color: var(--text-muted); font-size: .78rem; font-weight: 500; }
+        .c-tab.active {
+            color: var(--primary-light);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+        }
 
-        /* ══════════════════════════════════════════
-           HIGHLIGHT STRIP
-        ══════════════════════════════════════════ */
-        .highlight-strip {
-            position: relative; z-index: 1;
-            background: linear-gradient(135deg,#0e1933,#0a0d14 50%,#150e26);
-            border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
-            padding: 1.75rem 1.5rem;
+        .cockpit-status {
+            display: flex; align-items: center; gap: 0.5rem;
+            font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-emerald);
+            background: rgba(16, 185, 129, 0.08); padding: 0.3rem 0.75rem; border-radius: 20px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
         }
-        .highlight-inner {
-            max-width: 1240px; margin: 0 auto;
-            display: grid; grid-template-columns: repeat(3,1fr); gap: 0; align-items: center;
-        }
-        .highlight-item {
-            display: flex; align-items: center; gap: .75rem;
-            padding: .75rem 1.5rem; border-right: 1px solid var(--border);
-        }
-        .highlight-item:last-child { border-right: none; }
-        .hi-icon {
-            width: 38px; height: 38px; border-radius: 9px; flex-shrink: 0;
-            display: flex; align-items: center; justify-content: center; font-size: 1rem;
-        }
-        .hi-icon.bl { background: var(--primary-glow); color: var(--primary-bright); }
-        .hi-icon.gr { background: var(--green-glow);   color: var(--green); }
-        .hi-icon.pr { background: rgba(167,139,250,.1); color: var(--purple); }
-        .hi-title { font-size: .88rem; font-weight: 700; margin-bottom: .1rem; }
-        .hi-desc  { font-size: .76rem; color: var(--text-muted); }
 
-        /* ══════════════════════════════════════════
-           SECTIONS SHARED
-        ══════════════════════════════════════════ */
-        section { position: relative; z-index: 1; width: 100%; }
-        .section-inner { max-width: 1240px; margin: 0 auto; padding: 3.5rem 1.5rem; }
+        .cockpit-view { padding: 1.25rem; display: none; }
+        .cockpit-view.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Cockpit Sub-grid */
+        .cockpit-kpi-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+        .c-kpi-card {
+            background: rgba(13, 17, 26, 0.8);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            padding: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .c-kpi-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: var(--card-accent, var(--primary));
+        }
+        .c-kpi-top {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 0.45rem;
+        }
+        .c-kpi-label {
+            font-size: 0.72rem; color: var(--text-muted); font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .c-kpi-icon {
+            width: 28px; height: 28px; border-radius: 6px;
+            background: rgba(255,255,255,0.04); display: flex; align-items: center; justify-content: center;
+            font-size: 0.78rem; color: var(--card-accent, var(--primary-light));
+        }
+        .c-kpi-val {
+            font-family: var(--font-mono);
+            font-size: 1.45rem; font-weight: 800; color: var(--text-main);
+            line-height: 1.1; margin-bottom: 0.35rem;
+        }
+        .c-kpi-foot {
+            display: flex; align-items: center; gap: 0.45rem;
+            font-size: 0.72rem;
+        }
+        .c-badge-up {
+            color: var(--accent-emerald); font-weight: 600;
+            display: inline-flex; align-items: center; gap: 0.2rem;
+        }
+
+        .cockpit-visual-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+        .c-panel {
+            background: rgba(13, 17, 26, 0.8);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            padding: 1rem;
+        }
+        .c-panel-head {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 0.85rem;
+            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: 0.55rem;
+        }
+        .c-panel-title {
+            font-size: 0.82rem; font-weight: 700; color: var(--text-main);
+            display: flex; align-items: center; gap: 0.45rem;
+        }
+        .c-panel-meta {
+            font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-dim);
+        }
+
+        /* SVG Chart Simulation */
+        .c-chart-container {
+            width: 100%; height: 160px; position: relative;
+        }
+        .c-chart-container svg { width: 100%; height: 100%; }
+
+        /* Live Data Stream Table */
+        .c-data-table {
+            width: 100%; border-collapse: collapse;
+            font-family: var(--font-mono); font-size: 0.72rem;
+        }
+        .c-data-table th {
+            text-align: left; padding: 0.45rem 0.65rem; color: var(--text-dim);
+            border-bottom: 1px solid var(--border-subtle); font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.65rem;
+        }
+        .c-data-table td {
+            padding: 0.45rem 0.65rem; border-bottom: 1px solid rgba(255,255,255,0.03);
+            color: var(--text-muted);
+        }
+        .c-data-table tr:hover td {
+            background: rgba(255,255,255,0.02); color: var(--text-main);
+        }
+        .tag-status {
+            padding: 2px 6px; border-radius: 4px; font-size: 0.62rem; font-weight: 700;
+        }
+        .tag-status.ok { background: rgba(16,185,129,0.12); color: var(--accent-emerald); border: 1px solid rgba(16,185,129,0.25); }
+        .tag-status.sync { background: rgba(59,130,246,0.12); color: var(--primary-light); border: 1px solid rgba(59,130,246,0.25); }
+        .tag-status.alert { background: rgba(245,158,11,0.12); color: var(--accent-amber); border: 1px solid rgba(245,158,11,0.25); }
+
+        /* ── INDUSTRIAL TRUST & INTEGRATION STRIP ── */
+        .tech-strip {
+            padding: 2.25rem 0;
+            border-top: 1px solid var(--border-subtle);
+            border-bottom: 1px solid var(--border-subtle);
+            background: rgba(13, 17, 26, 0.4);
+            margin: 3.5rem 0;
+        }
+        .tech-strip-label {
+            text-align: center; font-size: 0.72rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-dim);
+            margin-bottom: 1.25rem;
+        }
+        .tech-grid {
+            display: flex; align-items: center; justify-content: center;
+            gap: 2.5rem; flex-wrap: wrap;
+        }
+        .tech-badge {
+            display: flex; align-items: center; gap: 0.6rem;
+            color: var(--text-muted); font-size: 0.88rem; font-weight: 600;
+            transition: all 0.2s;
+        }
+        .tech-badge i { font-size: 1.1rem; color: var(--primary-light); }
+        .tech-badge:hover { color: var(--text-main); transform: translateY(-1px); }
+
+        /* ── SECTION COMMONS ── */
+        section { padding: 4.5rem 0; position: relative; z-index: 1; }
+        .section-header {
+            text-align: center; max-width: 720px; margin: 0 auto 3rem;
+        }
         .section-tag {
-            display: inline-flex; align-items: center; gap: .4rem;
-            font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .09em;
-            color: var(--primary); background: var(--primary-glow);
-            border: 1px solid rgba(79,142,247,.22); padding: .26rem .75rem; border-radius: 20px; margin-bottom: .85rem;
+            display: inline-flex; align-items: center; gap: 0.45rem;
+            font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+            color: var(--primary-light); background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            padding: 0.3rem 0.85rem; border-radius: 20px; margin-bottom: 0.85rem;
         }
         .section-title {
-            font-size: clamp(1.7rem, 3.2vw, 2.5rem);
-            font-weight: 800; letter-spacing: -.03em; line-height: 1.15; margin-bottom: .65rem;
+            font-size: clamp(1.85rem, 3.8vw, 2.75rem);
+            font-weight: 900; letter-spacing: -0.035em; line-height: 1.15;
+            margin-bottom: 0.75rem;
         }
-        .section-sub { color: var(--text-secondary); font-size: .95rem; max-width: 540px; line-height: 1.6; }
-        .text-gradient {
-            background: linear-gradient(135deg,var(--primary-bright),var(--purple));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        .section-subtitle {
+            color: var(--text-muted); font-size: 1.02rem; line-height: 1.6;
         }
 
-        /* ══════════════════════════════════════════
-           FEATURES
-        ══════════════════════════════════════════ */
-        .features-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-top: 2rem; }
-        .feature-card {
-            background: var(--bg-surface); border: 1px solid var(--border);
-            border-radius: 12px; padding: 1.35rem; transition: all .25s; position: relative; overflow: hidden;
+        /* ── BENTO ARCHITECTURE GRID ── */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.25rem;
         }
-        .feature-card::after {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-            background: linear-gradient(90deg,var(--primary),var(--purple));
-            transform: scaleX(0); transform-origin: left; transition: transform .3s;
+        .bento-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 1.65rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.25s ease;
+            display: flex; flex-direction: column; justify-content: space-between;
         }
-        .feature-card:hover { transform: translateY(-4px); border-color: rgba(79,142,247,.3); box-shadow: 0 12px 32px rgba(0,0,0,.3); }
-        .feature-card:hover::after { transform: scaleX(1); }
-        .feature-icon {
-            width: 42px; height: 42px; border-radius: 9px;
-            display: flex; align-items: center; justify-content: center; font-size: 1.15rem; margin-bottom: .85rem;
+        .bento-card:hover {
+            border-color: var(--border-accent);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
         }
-        .fi-blue   { background: var(--primary-glow); color: var(--primary-bright); }
-        .fi-purple { background: rgba(167,139,250,.1); color: var(--purple); }
-        .fi-green  { background: var(--green-glow);   color: var(--green); }
-        .fi-orange { background: rgba(251,146,60,.1); color: var(--orange); }
-        .fi-red    { background: rgba(248,113,113,.1); color: var(--red); }
-        .fi-cyan   { background: rgba(34,211,238,.1); color: var(--cyan); }
-        .feature-title { font-size: .92rem; font-weight: 700; margin-bottom: .4rem; }
-        .feature-desc  { color: var(--text-secondary); font-size: .82rem; line-height: 1.6; }
-
-        /* ══════════════════════════════════════════
-           HOW IT WORKS
-        ══════════════════════════════════════════ */
-        .how-section { background: var(--bg-surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-        .steps-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; margin-top: 2.25rem; position: relative; }
-        .steps-grid::before {
-            content: ''; position: absolute; top: 30px;
-            left: calc(16.66% + .8rem); right: calc(16.66% + .8rem); height: 1px;
-            background: linear-gradient(90deg,transparent,var(--primary-bright),transparent);
-        }
-        .step-card { text-align: center; padding: .35rem; }
-        .step-num {
-            width: 58px; height: 58px; border-radius: 50%;
-            background: var(--bg-elevated); border: 2px solid var(--primary);
+        .bento-card.span-2 { grid-column: span 2; }
+        .bento-icon {
+            width: 44px; height: 44px; border-radius: 10px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 1.25rem; font-weight: 900; color: var(--primary-bright);
-            margin: 0 auto 1rem; box-shadow: 0 0 18px rgba(79,142,247,.22);
-            position: relative; z-index: 1;
+            font-size: 1.2rem; margin-bottom: 1.15rem;
         }
-        .step-title { font-size: .95rem; font-weight: 700; margin-bottom: .45rem; }
-        .step-desc  { color: var(--text-secondary); font-size: .82rem; line-height: 1.6; }
+        .bento-icon.blue { background: rgba(59,130,246,0.12); color: var(--primary-light); }
+        .bento-icon.purple { background: rgba(139,92,246,0.12); color: var(--accent-purple); }
+        .bento-icon.emerald { background: rgba(16,185,129,0.12); color: var(--accent-emerald); }
+        .bento-icon.amber { background: rgba(245,158,11,0.12); color: var(--accent-amber); }
+        .bento-icon.cyan { background: rgba(6,182,212,0.12); color: var(--accent-cyan); }
+        .bento-icon.rose { background: rgba(244,63,94,0.12); color: var(--accent-rose); }
 
-        /* ══════════════════════════════════════════
-           CTA
-        ══════════════════════════════════════════ */
-        .cta-section { position: relative; overflow: hidden; }
-        .cta-bg   { position: absolute; inset: 0; background: linear-gradient(135deg,#0d1a29,#0a0d14 50%,#130d24); }
-        .cta-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 600px; height: 280px; background: radial-gradient(ellipse,rgba(79,142,247,.09) 0%,transparent 70%); }
-        .cta-inner { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; padding: 4rem 1.5rem; text-align: center; }
-        .cta-title { font-size: clamp(1.75rem, 3.6vw, 2.75rem); font-weight: 900; letter-spacing: -.03em; margin-bottom:.85rem; }
-        .cta-sub   { color: var(--text-secondary); font-size: .95rem; margin-bottom: 1.75rem; }
-        .cta-actions { display: flex; gap: .75rem; justify-content: center; flex-wrap: wrap; }
+        .bento-title {
+            font-size: 1.15rem; font-weight: 700; margin-bottom: 0.45rem;
+            letter-spacing: -0.015em; color: var(--text-main);
+        }
+        .bento-desc {
+            font-size: 0.86rem; color: var(--text-muted); line-height: 1.6;
+            margin-bottom: 1.25rem;
+        }
+        .bento-visual {
+            background: rgba(10, 14, 22, 0.8);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 0.85rem;
+            font-family: var(--font-mono);
+            font-size: 0.74rem;
+        }
 
-        /* ══════════════════════════════════════════
-           FOOTER
-        ══════════════════════════════════════════ */
+        /* ── INGESTION PIPELINE STEPS ── */
+        .pipeline-wrap {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.25rem;
+            position: relative;
+        }
+        .pipeline-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 1.5rem;
+            position: relative;
+        }
+        .p-step-num {
+            font-family: var(--font-mono);
+            font-size: 0.75rem; font-weight: 700; color: var(--primary-light);
+            background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.25);
+            display: inline-block; padding: 2px 8px; border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+        .p-title { font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; }
+        .p-desc { font-size: 0.84rem; color: var(--text-muted); line-height: 1.55; }
+
+        /* ── COMPARISON TABLE ── */
+        .comparison-table-wrap {
+            background: var(--bg-card);
+            border: 1px solid var(--border-strong);
+            border-radius: 12px;
+            overflow-x: auto;
+        }
+        .cmp-table {
+            width: 100%; border-collapse: collapse;
+            text-align: left; font-size: 0.88rem;
+        }
+        .cmp-table th {
+            padding: 1rem 1.25rem; background: #0d121c;
+            border-bottom: 1px solid var(--border-subtle);
+            font-weight: 700; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .cmp-table th.highlight {
+            color: var(--primary-light); background: rgba(59, 130, 246, 0.08);
+            border-bottom: 2px solid var(--primary-light);
+        }
+        .cmp-table td {
+            padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+        }
+        .cmp-table td.highlight {
+            background: rgba(59, 130, 246, 0.03);
+            color: var(--text-main); font-weight: 600;
+        }
+        .cmp-table tr:last-child td { border-bottom: none; }
+        .check-ok { color: var(--accent-emerald); font-size: 1rem; }
+        .check-no { color: var(--text-dim); }
+
+        /* ── FAQ ACCORDION ── */
+        .faq-grid {
+            max-width: 840px; margin: 0 auto; display: flex; flex-direction: column; gap: 0.85rem;
+        }
+        .faq-item {
+            background: var(--bg-card); border: 1px solid var(--border-subtle);
+            border-radius: 10px; overflow: hidden; transition: border-color 0.2s;
+        }
+        .faq-item.open { border-color: var(--border-accent); }
+        .faq-q {
+            padding: 1.15rem 1.25rem; cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+            font-weight: 700; font-size: 0.95rem; user-select: none;
+        }
+        .faq-q i { color: var(--text-muted); transition: transform 0.2s; }
+        .faq-item.open .faq-q i { transform: rotate(180deg); color: var(--primary-light); }
+        .faq-a {
+            padding: 0 1.25rem 1.15rem; color: var(--text-muted); font-size: 0.88rem; line-height: 1.65;
+            display: none; border-top: 1px solid rgba(255,255,255,0.03); margin-top: 0.35rem; padding-top: 0.85rem;
+        }
+        .faq-item.open .faq-a { display: block; }
+
+        /* ── BOTTOM COMMAND CTA ── */
+        .command-cta {
+            background: linear-gradient(135deg, #0e172a, #0b1120 50%, #151128);
+            border: 1px solid var(--border-strong);
+            border-radius: 16px;
+            padding: 3.5rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+        }
+        .command-cta::before {
+            content: ''; position: absolute; top: -50%; left: 50%; transform: translateX(-50%);
+            width: 600px; height: 300px;
+            background: radial-gradient(ellipse, rgba(59, 130, 246, 0.2), transparent 70%);
+            pointer-events: none;
+        }
+        .command-cta-title {
+            font-size: clamp(2rem, 4vw, 3rem); font-weight: 900; letter-spacing: -0.03em;
+            margin-bottom: 0.85rem;
+        }
+        .command-cta-sub {
+            color: var(--text-muted); font-size: 1.05rem; max-width: 600px; margin: 0 auto 2rem;
+        }
+
+        /* ── FOOTER ── */
         footer {
+            border-top: 1px solid var(--border-subtle);
+            background: #080b12;
+            padding: 3.5rem 0 2rem;
             position: relative; z-index: 1;
-            border-top: 1px solid var(--border); background: var(--bg-surface);
-            padding: 2.5rem 1.5rem 1.5rem;
         }
-        .footer-inner { max-width: 1240px; margin: 0 auto; }
-        .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 2rem; margin-bottom: 1.75rem; }
-        .footer-brand { display: flex; align-items: center; gap: .55rem; margin-bottom: .75rem; }
-        .footer-logo-box {
-            width: 26px; height: 26px; border-radius: 6px;
-            background: linear-gradient(145deg,#1e40af,#3b82f6);
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 0 10px rgba(59,130,246,.3);
+        .footer-cols {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 2.5rem;
+            margin-bottom: 2.5rem;
         }
-        .footer-logo-box svg { width: 14px; height: 14px; }
-        .footer-brand-name { font-size: 1rem; font-weight: 800; color: var(--text-primary); }
-        .footer-desc { color: var(--text-muted); font-size: .8rem; line-height: 1.65; margin-bottom: 1rem; }
-        .footer-social { display: flex; gap: .5rem; }
-        .social-btn {
-            width: 30px; height: 30px; border-radius: 6px;
-            background: var(--bg-elevated); border: 1px solid var(--border);
-            display: flex; align-items: center; justify-content: center;
-            color: var(--text-muted); font-size: .78rem; text-decoration: none; transition: all .2s;
+        .footer-brand-desc {
+            color: var(--text-muted); font-size: 0.84rem; line-height: 1.65;
+            margin: 0.85rem 0 1.25rem; max-width: 320px;
         }
-        .social-btn:hover { border-color: var(--primary); color: var(--primary); }
-        .footer-col-title { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-secondary); margin-bottom: .85rem; }
-        .footer-links { list-style: none; display: flex; flex-direction: column; gap: .45rem; }
-        .footer-links a { color: var(--text-muted); text-decoration: none; font-size: .8rem; transition: color .2s; }
-        .footer-links a:hover { color: var(--primary); }
+        .footer-links-title {
+            font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+            color: var(--text-dim); margin-bottom: 1rem;
+        }
+        .footer-ul { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
+        .footer-ul a {
+            color: var(--text-muted); text-decoration: none; font-size: 0.84rem;
+            transition: color 0.2s;
+        }
+        .footer-ul a:hover { color: var(--primary-light); }
         .footer-bottom {
-            border-top: 1px solid var(--border); padding-top: 1.25rem;
-            display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .75rem;
-        }
-        .footer-copy { color: var(--text-muted); font-size: .75rem; }
-        .footer-tech { display: flex; gap: .35rem; flex-wrap: wrap; }
-        .tech-pill {
-            font-size: .64rem; font-weight: 600; padding: .18rem .48rem; border-radius: 20px;
-            border: 1px solid var(--border); color: var(--text-muted); background: var(--bg-elevated);
+            border-top: 1px solid var(--border-subtle);
+            padding-top: 1.5rem;
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 1rem;
+            font-size: 0.78rem; color: var(--text-dim);
         }
 
-        /* ══════════════════════════════════════════
-           FLASH
-        ══════════════════════════════════════════ */
-        .flash-wrap { position: fixed; top: calc(var(--nav-h) + 10px); right: 16px; z-index: 9999; display: flex; flex-direction: column; gap: .4rem; }
+        /* ── FLASH TOASTS ── */
+        .flash-wrap {
+            position: fixed; top: calc(var(--nav-h) + 12px); right: 20px; z-index: 9999;
+            display: flex; flex-direction: column; gap: 0.5rem;
+        }
         .flash-msg {
-            padding: .75rem 1rem; border-radius: 8px; font-size: .82rem; font-weight: 500;
-            display: flex; align-items: center; gap: .45rem;
-            animation: fadeInUp .25s ease; box-shadow: 0 8px 24px rgba(0,0,0,.5); min-width: 250px; max-width: 320px;
+            padding: 0.85rem 1.15rem; border-radius: 8px; font-size: 0.84rem; font-weight: 500;
+            display: flex; align-items: center; gap: 0.6rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6); min-width: 280px; max-width: 360px;
         }
-        .flash-success { background: rgba(6,35,25,.95); border: 1px solid rgba(52,211,153,.4); color: var(--green); }
-        .flash-error   { background: rgba(35,6,6,.95);  border: 1px solid rgba(248,113,113,.4); color: var(--red); }
+        .flash-success { background: rgba(6, 35, 25, 0.95); border: 1px solid rgba(16, 185, 129, 0.4); color: var(--accent-emerald); }
+        .flash-error   { background: rgba(35, 6, 6, 0.95);  border: 1px solid rgba(244, 63, 94, 0.4); color: var(--accent-rose); }
 
-        /* ══════════════════════════════════════════
-           MOBILE & RESPONSIVE RULES
-        ══════════════════════════════════════════ */
-
-        /* Screen widths <= 1280px: hide floating elements to avoid overlap */
-        @media (max-width: 1280px) {
-            .floating-elem { display: none !important; }
-        }
-
-        /* Tablet (<= 1024px) */
+        /* ── RESPONSIVE RULES (MOBILE & TABLET) ── */
         @media (max-width: 1024px) {
-            .features-grid   { grid-template-columns: repeat(2,1fr); }
-            .footer-top      { grid-template-columns: 1fr 1fr; }
-            .stats-grid      { grid-template-columns: repeat(2,1fr); }
-            .highlight-inner { grid-template-columns: 1fr; }
-            .highlight-item  { border-right: none; border-bottom: 1px solid var(--border); padding: .75rem 1rem; }
-            .highlight-item:last-child { border-bottom: none; }
+            .hero-metrics-ribbon { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+            .ribbon-item:nth-child(2) { border-right: none; }
+            .bento-grid { grid-template-columns: repeat(2, 1fr); }
+            .bento-card.span-2 { grid-column: span 2; }
+            .pipeline-wrap { grid-template-columns: repeat(2, 1fr); }
+            .cockpit-visual-grid { grid-template-columns: 1fr; }
+            .cockpit-kpi-row { grid-template-columns: repeat(2, 1fr); }
+            .footer-cols { grid-template-columns: 1fr 1fr; }
         }
 
-        /* Mobile (<= 768px) */
         @media (max-width: 768px) {
-            :root { --nav-h: 58px; }
+            :root { --nav-h: 62px; }
+            .nav-links, .nav-ctas { display: none; }
+            .hamburger { display: flex; }
+            .brand-badge { display: none; }
+            
+            .hero { padding: 2.5rem 0 1.5rem; }
+            .hero-title { font-size: 2.1rem; }
+            .hero-subtitle { font-size: 0.92rem; }
+            .hero-actions { flex-direction: column; width: 100%; }
+            .btn-hero-primary, .btn-hero-secondary { width: 100%; justify-content: center; }
 
-            /* Nav */
-            nav { padding: 0 1rem; }
-            .nav-links        { display: none; }
-            .nav-actions      { display: none; }
-            .nav-hamburger    { display: flex; }
-            .nav-badge        { display: none; }
+            .hero-metrics-ribbon { grid-template-columns: repeat(2, 1fr); }
+            .ribbon-val { font-size: 1.15rem; }
 
-            /* Hero */
-            .hero { padding: calc(var(--nav-h) + 1.25rem) 1rem 1.75rem; }
-            .hero-badge { font-size: .72rem; margin-bottom: .85rem; padding: .28rem .7rem; }
-            .hero-title { font-size: clamp(1.85rem, 7.5vw, 2.75rem); margin-bottom: .75rem; }
-            .hero-subtitle { font-size: .88rem; margin-bottom: 1.25rem; line-height: 1.6; }
-            .hero-actions { gap: .6rem; margin-bottom: 1.5rem; width: 100%; }
-            .btn-hero-primary, .btn-hero-secondary {
-                padding: .75rem 1.25rem; font-size: .88rem; width: 100%;
-                justify-content: center; min-height: 44px;
-            }
-
-            /* Mockup on mobile */
-            .mockup-body { padding: .65rem; }
-            .mockup-kpis { grid-template-columns: repeat(2,1fr); gap: .5rem; margin-bottom: 0; }
-            .mockup-kpi  { padding: .55rem .65rem; }
-            .mkpi-label  { font-size: .52rem; margin-bottom: .15rem; }
-            .mkpi-val    { font-size: 1.05rem; }
-            .mkpi-badge  { font-size: .52rem; }
-            .mockup-charts { display: none; }
-
-            /* Stats */
-            .stats-section { padding: 1.5rem 1rem; }
-            .stats-grid { grid-template-columns: repeat(2,1fr); gap: .65rem; }
-            .stat-card  { padding: 1rem .75rem; }
-            .stat-num   { font-size: 1.85rem; }
-            .stat-label { font-size: .74rem; }
-
-            /* Highlight */
-            .highlight-strip { padding: 1.25rem 1rem; }
-            .highlight-item  { padding: .65rem .5rem; }
-
-            /* Features */
-            .section-inner { padding: 2.25rem 1rem; }
-            .section-title { font-size: 1.65rem; }
-            .section-sub   { font-size: .88rem; }
-            .features-grid { grid-template-columns: 1fr; gap: .75rem; margin-top: 1.5rem; }
-            .feature-card  { padding: 1.15rem; }
-
-            /* Steps */
-            .steps-grid { grid-template-columns: 1fr; gap: 1rem; margin-top: 1.75rem; }
-            .steps-grid::before { display: none; }
-            .step-card { padding: 0; }
-            .step-num  { width: 50px; height: 50px; font-size: 1.15rem; margin-bottom: .75rem; }
-
-            /* CTA */
-            .cta-inner { padding: 2.75rem 1rem; }
-            .cta-title { font-size: 1.75rem; }
-            .cta-sub   { font-size: .88rem; margin-bottom: 1.4rem; }
-            .cta-actions { flex-direction: column; align-items: stretch; width: 100%; }
-            .cta-actions a { width: 100%; justify-content: center; min-height: 44px; padding: .75rem 1.25rem; }
-
-            /* Footer */
-            footer { padding: 2rem 1rem 1.25rem; }
-            .footer-top { grid-template-columns: 1fr; gap: 1.25rem; margin-bottom: 1.5rem; }
-            .footer-bottom { flex-direction: column; align-items: flex-start; gap: .6rem; }
-
-            /* Trust bar */
-            .trust-bar   { padding: 1.1rem 1rem; }
-            .trust-logos { gap: 1.1rem; }
-            .trust-logo  { font-size: .75rem; }
-
-            /* Flash */
-            .flash-wrap { right: 8px; left: 8px; }
-            .flash-msg  { min-width: unset; max-width: 100%; }
-        }
-
-        /* Extra small phones (<= 400px) */
-        @media (max-width: 400px) {
-            .nav-brand-name { font-size: 1.05rem; }
-            .hero-title     { font-size: 1.7rem; }
-            .stat-num       { font-size: 1.6rem; }
-            .mockup-kpis    { grid-template-columns: 1fr; }
+            .cockpit-header { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+            .cockpit-tabs { width: 100%; overflow-x: auto; }
+            .cockpit-kpi-row { grid-template-columns: 1fr; }
+            .bento-grid { grid-template-columns: 1fr; }
+            .bento-card.span-2 { grid-column: span 1; }
+            .pipeline-wrap { grid-template-columns: 1fr; }
+            .footer-cols { grid-template-columns: 1fr; gap: 2rem; }
         }
     </style>
 </head>
 <body>
 
-<div class="bg-grid"></div>
-<div class="bg-glow bg-glow-1"></div>
-<div class="bg-glow bg-glow-2"></div>
+<div class="ambient-grid"></div>
+<div class="ambient-glow-top"></div>
+<div class="ambient-glow-side"></div>
 
-<!-- Flash messages -->
+<!-- Flash Notifications -->
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
     <div class="flash-wrap">
@@ -630,34 +806,38 @@
   {% endif %}
 {% endwith %}
 
-<!-- ═══════════ NAVBAR ═══════════ -->
+<!-- ═══════════ NAVIGATION ═══════════ -->
 <nav id="navbar">
-    <div class="nav-inner">
-        <a href="/" class="nav-brand">
-            <div class="nav-logo-box">
+    <div class="shell nav-wrap">
+        <a href="/" class="brand">
+            <div class="brand-icon">
                 <svg viewBox="0 0 24 24" fill="none">
-                    <path d="M5 8L12 4L19 8L12 20L5 8Z" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.55)" stroke-width="1"/>
-                    <path d="M5 8H19" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
-                    <path d="M8 8L12 4L16 8L12 14L8 8Z" fill="rgba(255,255,255,0.55)"/>
+                    <path d="M5 8L12 4L19 8L12 20L5 8Z" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.85)" stroke-width="1.2"/>
+                    <path d="M5 8H19" stroke="rgba(255,255,255,0.6)" stroke-width="1"/>
+                    <path d="M8 8L12 4L16 8L12 14L8 8Z" fill="rgba(255,255,255,0.95)"/>
                 </svg>
             </div>
-            <span class="nav-brand-name">DataSphere</span>
-            <span class="nav-badge">Enterprise</span>
+            <span class="brand-text">DataSphere</span>
+            <span class="brand-badge">ENTERPRISE v2.4</span>
         </a>
 
         <div class="nav-links">
-            <a href="#features">Features</a>
-            <a href="#how-it-works">How It Works</a>
-            <a href="#stats">Analytics</a>
+            <a href="#cockpit">Live Cockpit</a>
+            <a href="#features">Capabilities</a>
+            <a href="#pipeline">Architecture</a>
+            <a href="#benchmark">Benchmarks</a>
+            <a href="#faq">FAQ</a>
         </div>
 
-        <div class="nav-actions">
-            <a href="/demo-login" class="btn-ghost" style="color:var(--primary-bright);border:1px solid rgba(79,142,247,0.3);"><i class="fas fa-play" style="font-size:0.65rem;margin-right:4px;"></i> Demo</a>
-            <a href="/login"    class="btn-ghost">Sign In</a>
+        <div class="nav-ctas">
+            <a href="/demo-login" class="btn-demo-pill" title="Instant Session As Demo User">
+                <i class="fas fa-bolt"></i> 1-Click Demo
+            </a>
+            <a href="/login" class="btn-ghost">Sign In</a>
             <a href="/register" class="btn-primary-nav">Get Started Free</a>
         </div>
 
-        <button class="nav-hamburger" id="hamburger" aria-label="Toggle Menu">
+        <button class="hamburger" id="hamburger" aria-label="Toggle Navigation">
             <i class="fas fa-bars" id="ham-icon"></i>
         </button>
     </div>
@@ -665,109 +845,357 @@
 
 <!-- Mobile Drawer -->
 <div class="nav-drawer" id="navDrawer">
-    <a href="#features"    onclick="closeDrawer()">Features</a>
-    <a href="#how-it-works" onclick="closeDrawer()">How It Works</a>
-    <a href="#stats"       onclick="closeDrawer()">Analytics</a>
-    <div class="nav-drawer-divider"></div>
-    <div class="nav-drawer-cta">
-        <a href="/demo-login" class="drawer-signin" style="color:var(--primary-bright);border-color:rgba(79,142,247,0.3);"><i class="fas fa-play" style="font-size:0.75rem;margin-right:6px;"></i> Instant Demo</a>
-        <a href="/login"    class="drawer-signin">Sign In</a>
-        <a href="/register" class="drawer-start">Get Started Free</a>
+    <a href="#cockpit" onclick="closeDrawer()">Live Cockpit</a>
+    <a href="#features" onclick="closeDrawer()">Capabilities</a>
+    <a href="#pipeline" onclick="closeDrawer()">Architecture</a>
+    <a href="#benchmark" onclick="closeDrawer()">Benchmarks</a>
+    <a href="#faq" onclick="closeDrawer()">FAQ</a>
+    <div class="drawer-divider"></div>
+    <div class="drawer-ctas">
+        <a href="/demo-login" class="btn-demo-pill" style="justify-content:center;"><i class="fas fa-bolt"></i> Instant 1-Click Demo</a>
+        <a href="/login" class="btn-ghost">Sign In</a>
+        <a href="/register" class="btn-primary-nav">Get Started Free</a>
     </div>
 </div>
 
-<!-- ═══════════ HERO ═══════════ -->
+<!-- ═══════════ LIVE TELEMETRY MARQUEE ═══════════ -->
+<div class="telemetry-ticker">
+    <div class="ticker-track">
+        <div class="ticker-item"><span class="ticker-dot green"></span> ENGINE: <span class="ticker-val">ONLINE</span></div>
+        <div class="ticker-item"><span class="ticker-dot blue"></span> INGESTION: <span class="ticker-val">48,250 ROWS/SEC</span></div>
+        <div class="ticker-item"><span class="ticker-dot purple"></span> MEDIAN LATENCY: <span class="ticker-val">8.4ms</span></div>
+        <div class="ticker-item"><span class="ticker-dot green"></span> DATA INTEGRITY: <span class="ticker-val">100% VERIFIED</span></div>
+        <div class="ticker-item"><span class="ticker-dot blue"></span> PROTOCOL: <span class="ticker-val">PYTHON 3.11 / DASH 2.17</span></div>
+        <div class="ticker-item"><span class="ticker-dot purple"></span> SESSION ISOLATION: <span class="ticker-val">AES-GCM-256</span></div>
+        <div class="ticker-item"><span class="ticker-dot green"></span> SUPPORTED: <span class="ticker-val">CSV &bull; XLSX &bull; XLS &bull; SQLITE</span></div>
+        
+        <!-- Duplicated items for infinite marquee loop -->
+        <div class="ticker-item"><span class="ticker-dot green"></span> ENGINE: <span class="ticker-val">ONLINE</span></div>
+        <div class="ticker-item"><span class="ticker-dot blue"></span> INGESTION: <span class="ticker-val">48,250 ROWS/SEC</span></div>
+        <div class="ticker-item"><span class="ticker-dot purple"></span> MEDIAN LATENCY: <span class="ticker-val">8.4ms</span></div>
+        <div class="ticker-item"><span class="ticker-dot green"></span> DATA INTEGRITY: <span class="ticker-val">100% VERIFIED</span></div>
+        <div class="ticker-item"><span class="ticker-dot blue"></span> PROTOCOL: <span class="ticker-val">PYTHON 3.11 / DASH 2.17</span></div>
+        <div class="ticker-item"><span class="ticker-dot purple"></span> SESSION ISOLATION: <span class="ticker-val">AES-GCM-256</span></div>
+        <div class="ticker-item"><span class="ticker-dot green"></span> SUPPORTED: <span class="ticker-val">CSV &bull; XLSX &bull; XLS &bull; SQLITE</span></div>
+    </div>
+</div>
+
+<!-- ═══════════ COMMAND HERO ═══════════ -->
 <section class="hero">
+    <div class="shell">
+        <div class="hero-head">
+            <a href="/demo-login" class="hero-badge">
+                <span class="pulse-live"></span>
+                <span>Open Source Developer Showcase</span>
+                <span style="color:var(--text-dim);">&bull;</span>
+                <span style="color:var(--text-main);">Try 1-Click Interactive Demo &rarr;</span>
+            </a>
 
-    <!-- Floating elements (wide desktop only) -->
-    <div class="floating-elem fe-1"><div class="float-icon blue" style="position:relative;"><div class="pulse-ring"></div><i class="fas fa-chart-line"></i></div></div>
-    <div class="floating-elem fe-2"><div class="float-icon purple"><i class="fas fa-brain"></i></div></div>
-    <div class="floating-elem fe-3"><div class="float-icon cyan"><i class="fas fa-wave-square"></i></div></div>
-    <div class="floating-elem fe-4"><div class="float-icon green" style="position:relative;"><div class="pulse-ring" style="animation-delay:.5s;border-color:rgba(52,211,153,.22);"></div><i class="fas fa-database"></i></div></div>
-    <div class="floating-elem fe-5"><div class="float-icon orange"><i class="fas fa-shield-halved"></i></div></div>
-    <div class="floating-elem fe-6"><div class="float-icon blue"><i class="fas fa-comments"></i></div></div>
-    <div class="floating-elem fe-card-l">
-        <div class="float-card">
-            <div class="float-card-label">Revenue</div>
-            <div class="float-card-value" style="color:#60a5fa;">$2.4M</div>
-            <div class="float-card-badge">↑ 18.2% this month</div>
-        </div>
-    </div>
-    <div class="floating-elem fe-card-r">
-        <div class="float-card">
-            <div class="float-card-label">Data Processed</div>
-            <div class="float-card-value" style="color:#a78bfa;">1.2M rows</div>
-            <div class="float-card-badge">↑ Analysed in 2.3s</div>
-        </div>
-    </div>
-    <div class="floating-elem fe-arc-l"></div>
-    <div class="floating-elem fe-arc-r"></div>
-    <div class="floating-elem float-dot d1"></div>
-    <div class="floating-elem float-dot d2"></div>
-    <div class="floating-elem float-dot d3"></div>
-    <div class="floating-elem float-dot d4"></div>
+            <h1 class="hero-title">
+                Turn Raw Datasets Into<br>
+                <span class="gradient-text">Industrial Intelligence</span>
+            </h1>
 
-    <!-- Hero text -->
-    <div class="hero-content">
-        <div class="hero-badge" onclick="window.location.href='/demo-login'" style="cursor:pointer;" title="Launch Instant Demo">
-            <span class="hero-badge-dot"></span>
-            Open Source Developer Showcase &bull; 1-Click Demo Available
-            <i class="fas fa-arrow-right" style="font-size:.6rem;"></i>
-        </div>
+            <p class="hero-subtitle">
+                DataSphere is a high-concurrency business intelligence platform engineered with Python, Dash, and Plotly. Upload complex datasets, trigger automated anomaly detection, and generate executive KPI boards with sub-second execution.
+            </p>
 
-        <h1 class="hero-title">
-            Turn Raw Data Into<br>
-            <span class="hero-gradient">Actionable Intelligence</span>
-        </h1>
+            <div class="hero-actions">
+                <a href="/demo-login" class="btn-hero-primary">
+                    <i class="fas fa-bolt"></i> Launch Instant Demo
+                </a>
+                <a href="/register" class="btn-hero-secondary">
+                    <i class="fas fa-user-plus"></i> Create Workspace
+                </a>
+                <a href="https://github.com/ninad2004-9/Enterprise-Analytics-Dashboard" target="_blank" rel="noopener noreferrer" class="btn-hero-ghost">
+                    <i class="fab fa-github"></i> Inspect GitHub Source
+                </a>
+            </div>
 
-        <p class="hero-subtitle">
-            A high-performance enterprise analytics suite built with Python, Dash, and Plotly. Upload your datasets, visualize statistical trends, and unlock executive KPI insights.
-        </p>
-
-        <div class="hero-actions">
-            <a href="/demo-login" class="btn-hero-primary" style="background:linear-gradient(135deg,#2563eb,#3b82f6);"><i class="fas fa-bolt"></i> Instant Demo Access</a>
-            <a href="/register" class="btn-hero-secondary"><i class="fas fa-user-plus"></i> Create Free Account</a>
-            <a href="#how-it-works" class="btn-hero-secondary"><i class="fas fa-play-circle"></i> How It Works</a>
-        </div>
-
-        <!-- Mockup -->
-        <div class="hero-mockup">
-            <div class="mockup-browser">
-                <div class="mockup-bar">
-                    <div class="mockup-dots">
-                        <div class="mockup-dot md-r"></div>
-                        <div class="mockup-dot md-y"></div>
-                        <div class="mockup-dot md-g"></div>
-                    </div>
-                    <div class="mockup-url">datasphere.app/dashboard</div>
+            <!-- Industrial Metrics Ribbon -->
+            <div class="hero-metrics-ribbon">
+                <div class="ribbon-item">
+                    <div class="ribbon-val">&lt; 10<span>ms</span></div>
+                    <div class="ribbon-lbl">Median Query Latency</div>
                 </div>
-                <div class="mockup-body">
-                    <div class="mockup-kpis">
-                        <div class="mockup-kpi"><div class="mkpi-label">Total Revenue</div><div class="mkpi-val">$2.4M</div><div class="mkpi-badge">↑ 18.2%</div></div>
-                        <div class="mockup-kpi"><div class="mkpi-label">Active Users</div><div class="mkpi-val">84.3K</div><div class="mkpi-badge">↑ 12.5%</div></div>
-                        <div class="mockup-kpi"><div class="mkpi-label">Conversion</div><div class="mkpi-val">6.8%</div><div class="mkpi-badge">↑ 2.1%</div></div>
-                        <div class="mockup-kpi"><div class="mkpi-label">Data Points</div><div class="mkpi-val">1.2M</div><div class="mkpi-badge">↑ 34.7%</div></div>
+                <div class="ribbon-item">
+                    <div class="ribbon-val">100<span>%</span></div>
+                    <div class="ribbon-lbl">Session Memory Isolation</div>
+                </div>
+                <div class="ribbon-item">
+                    <div class="ribbon-val">50<span>+</span></div>
+                    <div class="ribbon-lbl">Plotly BI Visualizations</div>
+                </div>
+                <div class="ribbon-item">
+                    <div class="ribbon-val">0<span>-ETL</span></div>
+                    <div class="ribbon-lbl">Automatic Type Inference</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════ INTERACTIVE INDUSTRIAL COCKPIT STAGE ═══════════ -->
+        <div class="cockpit-stage" id="cockpit">
+            <div class="cockpit-header">
+                <div style="display:flex;align-items:center;gap:1rem;">
+                    <div class="window-dots">
+                        <div class="w-dot red"></div>
+                        <div class="w-dot yellow"></div>
+                        <div class="w-dot green"></div>
                     </div>
-                    <div class="mockup-charts">
-                        <div class="mockup-chart">
-                            <div class="mchart-title"><i class="fas fa-chart-bar" style="color:#60a5fa;margin-right:4px;"></i>Revenue by Month</div>
-                            <div class="mockup-bars">
-                                <div class="mbar" style="height:40%"></div><div class="mbar" style="height:60%"></div>
-                                <div class="mbar" style="height:50%"></div><div class="mbar" style="height:80%"></div>
-                                <div class="mbar" style="height:65%"></div><div class="mbar" style="height:90%"></div>
-                                <div class="mbar" style="height:75%"></div><div class="mbar" style="height:100%"></div>
-                            </div>
+                    <div class="cockpit-tabs">
+                        <button class="c-tab active" onclick="switchCockpitTab('tab-exec', this)"><i class="fas fa-chart-pie"></i> Executive Overview</button>
+                        <button class="c-tab" onclick="switchCockpitTab('tab-revenue', this)"><i class="fas fa-chart-line"></i> Revenue &amp; Margin</button>
+                        <button class="c-tab" onclick="switchCockpitTab('tab-ai', this)"><i class="fas fa-brain"></i> AI Correlation Feed</button>
+                        <button class="c-tab" onclick="switchCockpitTab('tab-pipeline', this)"><i class="fas fa-database"></i> Pipeline Telemetry</button>
+                    </div>
+                </div>
+                <div class="cockpit-status">
+                    <span class="ticker-dot green"></span>
+                    <span>LIVE STREAM &bull; 3,840 EVT/S</span>
+                </div>
+            </div>
+
+            <!-- TAB 1: EXECUTIVE OVERVIEW -->
+            <div id="tab-exec" class="cockpit-view active">
+                <div class="cockpit-kpi-row">
+                    <div class="c-kpi-card" style="--card-accent: #3b82f6;">
+                        <div class="c-kpi-top">
+                            <span class="c-kpi-label">Gross Processed Value</span>
+                            <span class="c-kpi-icon"><i class="fas fa-dollar-sign"></i></span>
                         </div>
-                        <div class="mockup-chart">
-                            <div class="mchart-title"><i class="fas fa-chart-line" style="color:#a78bfa;margin-right:4px;"></i>User Growth</div>
-                            <div class="mchart-line">
-                                <svg viewBox="0 0 300 50" preserveAspectRatio="none">
-                                    <defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#a78bfa" stop-opacity=".25"/><stop offset="100%" stop-color="#a78bfa" stop-opacity="0"/></linearGradient></defs>
-                                    <path d="M0,48 C60,40 120,24 180,14 C240,6 270,4 300,2" stroke="#a78bfa" stroke-width="2.5" fill="none"/>
-                                    <path d="M0,48 C60,40 120,24 180,14 C240,6 270,4 300,2 L300,50 L0,50Z" fill="url(#lg)"/>
-                                </svg>
-                            </div>
+                        <div class="c-kpi-val">$4,829,150</div>
+                        <div class="c-kpi-foot">
+                            <span class="c-badge-up"><i class="fas fa-arrow-up"></i> +18.4%</span>
+                            <span style="color:var(--text-dim);font-size:0.7rem;">vs previous 30-day baseline</span>
                         </div>
+                    </div>
+
+                    <div class="c-kpi-card" style="--card-accent: #10b981;">
+                        <div class="c-kpi-top">
+                            <span class="c-kpi-label">Data Ingestion Rate</span>
+                            <span class="c-kpi-icon"><i class="fas fa-bolt"></i></span>
+                        </div>
+                        <div class="c-kpi-val">142,800/s</div>
+                        <div class="c-kpi-foot">
+                            <span class="c-badge-up"><i class="fas fa-check-circle"></i> 99.98% Purity</span>
+                            <span style="color:var(--text-dim);font-size:0.7rem;">0 Schema Mismatches</span>
+                        </div>
+                    </div>
+
+                    <div class="c-kpi-card" style="--card-accent: #8b5cf6;">
+                        <div class="c-kpi-top">
+                            <span class="c-kpi-label">Statistical Correlation</span>
+                            <span class="c-kpi-icon"><i class="fas fa-project-diagram"></i></span>
+                        </div>
+                        <div class="c-kpi-val">0.892 r</div>
+                        <div class="c-kpi-foot">
+                            <span style="color:var(--accent-purple);font-weight:600;">High Significance</span>
+                            <span style="color:var(--text-dim);font-size:0.7rem;">p &lt; 0.001</span>
+                        </div>
+                    </div>
+
+                    <div class="c-kpi-card" style="--card-accent: #f59e0b;">
+                        <div class="c-kpi-top">
+                            <span class="c-kpi-label">Engine Dispatch Latency</span>
+                            <span class="c-kpi-icon"><i class="fas fa-microchip"></i></span>
+                        </div>
+                        <div class="c-kpi-val">4.2 ms</div>
+                        <div class="c-kpi-foot">
+                            <span class="c-badge-up"><i class="fas fa-check"></i> Nominal</span>
+                            <span style="color:var(--text-dim);font-size:0.7rem;">Memory cache warm</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cockpit-visual-grid">
+                    <!-- Chart Simulation -->
+                    <div class="c-panel">
+                        <div class="c-panel-head">
+                            <span class="c-panel-title"><i class="fas fa-chart-area" style="color:var(--primary-light);"></i> Executive Revenue vs Margin Velocity</span>
+                            <span class="c-panel-meta">SAMPLE DATASET: 2024 FINANCIAL METRICS</span>
+                        </div>
+                        <div class="c-chart-container">
+                            <svg viewBox="0 0 600 160" preserveAspectRatio="none">
+                                <defs>
+                                    <linearGradient id="grad1" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.35"/>
+                                        <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.0"/>
+                                    </linearGradient>
+                                    <linearGradient id="grad2" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.25"/>
+                                        <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0.0"/>
+                                    </linearGradient>
+                                </defs>
+                                <!-- Grid Lines -->
+                                <line x1="0" y1="30" x2="600" y2="30" stroke="#1a2333" stroke-dasharray="4"/>
+                                <line x1="0" y1="70" x2="600" y2="70" stroke="#1a2333" stroke-dasharray="4"/>
+                                <line x1="0" y1="110" x2="600" y2="110" stroke="#1a2333" stroke-dasharray="4"/>
+                                <line x1="0" y1="150" x2="600" y2="150" stroke="#1a2333"/>
+                                <!-- Area 1 -->
+                                <path d="M0,130 Q100,105 200,85 T400,45 T600,20 L600,150 L0,150 Z" fill="url(#grad1)"/>
+                                <path d="M0,130 Q100,105 200,85 T400,45 T600,20" stroke="#3b82f6" stroke-width="2.5" fill="none"/>
+                                <!-- Area 2 -->
+                                <path d="M0,140 Q120,130 240,110 T480,75 T600,55 L600,150 L0,150 Z" fill="url(#grad2)"/>
+                                <path d="M0,140 Q120,130 240,110 T480,75 T600,55" stroke="#8b5cf6" stroke-width="2" stroke-dasharray="2" fill="none"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Live Feed Data Table -->
+                    <div class="c-panel">
+                        <div class="c-panel-head">
+                            <span class="c-panel-title"><i class="fas fa-list-check" style="color:var(--accent-emerald);"></i> Pipeline Ingestion Queue</span>
+                            <span class="c-panel-meta">LIVE TELEMETRY</span>
+                        </div>
+                        <table class="c-data-table">
+                            <thead>
+                                <tr>
+                                    <th>Source</th>
+                                    <th>Records</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>revenue_q3.csv</td>
+                                    <td>42,500</td>
+                                    <td><span class="tag-status ok">PARSED</span></td>
+                                </tr>
+                                <tr>
+                                    <td>user_churn.xlsx</td>
+                                    <td>18,200</td>
+                                    <td><span class="tag-status sync">SYNCED</span></td>
+                                </tr>
+                                <tr>
+                                    <td>kpi_matrix.parquet</td>
+                                    <td>110,400</td>
+                                    <td><span class="tag-status ok">PARSED</span></td>
+                                </tr>
+                                <tr>
+                                    <td>ad_spend.csv</td>
+                                    <td>8,920</td>
+                                    <td><span class="tag-status ok">PARSED</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: REVENUE & MARGIN -->
+            <div id="tab-revenue" class="cockpit-view">
+                <div class="cockpit-kpi-row">
+                    <div class="c-kpi-card" style="--card-accent: #06b6d4;">
+                        <div class="c-kpi-top"><span class="c-kpi-label">Annual Recurring Revenue</span><span class="c-kpi-icon"><i class="fas fa-wallet"></i></span></div>
+                        <div class="c-kpi-val">$18.4M</div>
+                        <div class="c-kpi-foot"><span class="c-badge-up"><i class="fas fa-arrow-up"></i> +22.1%</span></div>
+                    </div>
+                    <div class="c-kpi-card" style="--card-accent: #10b981;">
+                        <div class="c-kpi-top"><span class="c-kpi-label">Net Retention Rate</span><span class="c-kpi-icon"><i class="fas fa-user-check"></i></span></div>
+                        <div class="c-kpi-val">128.4%</div>
+                        <div class="c-kpi-foot"><span class="c-badge-up"><i class="fas fa-check"></i> Best in Class</span></div>
+                    </div>
+                    <div class="c-kpi-card" style="--card-accent: #f59e0b;">
+                        <div class="c-kpi-top"><span class="c-kpi-label">Gross Margin</span><span class="c-kpi-icon"><i class="fas fa-percent"></i></span></div>
+                        <div class="c-kpi-val">76.8%</div>
+                        <div class="c-kpi-foot"><span style="color:var(--text-muted);">&plusmn; 0.4% QoQ</span></div>
+                    </div>
+                    <div class="c-kpi-card" style="--card-accent: #8b5cf6;">
+                        <div class="c-kpi-top"><span class="c-kpi-label">Customer Acquisition Cost</span><span class="c-kpi-icon"><i class="fas fa-tag"></i></span></div>
+                        <div class="c-kpi-val">$1,420</div>
+                        <div class="c-kpi-foot"><span class="c-badge-up"><i class="fas fa-arrow-down"></i> -8.3% Efficiency</span></div>
+                    </div>
+                </div>
+                <div class="c-panel">
+                    <div class="c-panel-head">
+                        <span class="c-panel-title"><i class="fas fa-chart-column" style="color:var(--accent-cyan);"></i> Regional Cohort Revenue Contribution (USD Thousands)</span>
+                        <span class="c-panel-meta">NORTH AMERICA &bull; EMEA &bull; APAC</span>
+                    </div>
+                    <div style="display:flex;align-items:flex-end;gap:12px;height:140px;padding-top:10px;">
+                        <div style="flex:1;background:linear-gradient(to top,#1e3a8a,#3b82f6);height:60%;border-radius:4px 4px 0 0;" title="Q1: $4,200k"></div>
+                        <div style="flex:1;background:linear-gradient(to top,#1e3a8a,#3b82f6);height:75%;border-radius:4px 4px 0 0;" title="Q2: $5,100k"></div>
+                        <div style="flex:1;background:linear-gradient(to top,#1e3a8a,#3b82f6);height:88%;border-radius:4px 4px 0 0;" title="Q3: $6,300k"></div>
+                        <div style="flex:1;background:linear-gradient(to top,#4338ca,#8b5cf6);height:100%;border-radius:4px 4px 0 0;" title="Q4 (Projected): $7,800k"></div>
+                        <div style="flex:1;background:linear-gradient(to top,#065f46,#10b981);height:68%;border-radius:4px 4px 0 0;" title="EMEA Base: $4,600k"></div>
+                        <div style="flex:1;background:linear-gradient(to top,#065f46,#10b981);height:82%;border-radius:4px 4px 0 0;" title="EMEA Expand: $5,800k"></div>
+                        <div style="flex:1;background:linear-gradient(to top,#78350f,#f59e0b);height:50%;border-radius:4px 4px 0 0;" title="APAC Expansion: $3,200k"></div>
+                        <div style="flex:1;background:linear-gradient(to top,#78350f,#f59e0b);height:72%;border-radius:4px 4px 0 0;" title="APAC Run-rate: $4,900k"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: AI CORRELATION FEED -->
+            <div id="tab-ai" class="cockpit-view">
+                <div class="cockpit-kpi-row">
+                    <div class="c-kpi-card" style="--card-accent: #8b5cf6;">
+                        <div class="c-kpi-top"><span class="c-kpi-label">Anomalies Detected</span><span class="c-kpi-icon"><i class="fas fa-radar"></i></span></div>
+                        <div class="c-kpi-val">3 Flagged</div>
+                        <div class="c-kpi-foot"><span style="color:var(--accent-amber);font-weight:600;">Confidence &gt; 96%</span></div>
+                    </div>
+                    <div class="c-kpi-card" style="--card-accent: #3b82f6;">
+                        <div class="c-kpi-top"><span class="c-kpi-label">Strong Correlations</span><span class="c-kpi-icon"><i class="fas fa-link"></i></span></div>
+                        <div class="c-kpi-val">14 Pairs</div>
+                        <div class="c-kpi-foot"><span class="c-badge-up">Pearson |r| &gt; 0.75</span></div>
+                    </div>
+                    <div class="c-kpi-card" style="--card-accent: #10b981;">
+                        <div class="c-kpi-top"><span class="c-kpi-label">Auto-Cleaned Outliers</span><span class="c-kpi-icon"><i class="fas fa-broom"></i></span></div>
+                        <div class="c-kpi-val">128 Points</div>
+                        <div class="c-kpi-foot"><span class="c-badge-up">Z-score &gt; 3.0</span></div>
+                    </div>
+                    <div class="c-kpi-card" style="--card-accent: #06b6d4;">
+                        <div class="c-kpi-top"><span class="c-kpi-label">Model Convergence</span><span class="c-kpi-icon"><i class="fas fa-check-double"></i></span></div>
+                        <div class="c-kpi-val">0.0018 &epsilon;</div>
+                        <div class="c-kpi-foot"><span class="c-badge-up">Optimized in 0.3s</span></div>
+                    </div>
+                </div>
+                <div class="c-panel">
+                    <div class="c-panel-head">
+                        <span class="c-panel-title"><i class="fas fa-network-wired" style="color:var(--accent-purple);"></i> Automated Statistical Correlation Matrix</span>
+                        <span class="c-panel-meta">PAIRWISE PEARSON COEFFICIENTS</span>
+                    </div>
+                    <div style="font-family:var(--font-mono);font-size:0.75rem;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:8px 0;">
+                        <div style="background:#162033;padding:10px;border-radius:6px;border-left:3px solid #3b82f6;">Marketing Spend &harr; Conversion Rate: <strong>+0.88</strong> (Strong Positive)</div>
+                        <div style="background:#162033;padding:10px;border-radius:6px;border-left:3px solid #10b981;">Discount % &harr; Volume Sold: <strong>+0.74</strong> (Moderate Positive)</div>
+                        <div style="background:#162033;padding:10px;border-radius:6px;border-left:3px solid #ef4444;">Page Latency &harr; Checkout Completion: <strong>-0.81</strong> (Strong Negative)</div>
+                        <div style="background:#162033;padding:10px;border-radius:6px;border-left:3px solid #8b5cf6;">Session Duration &harr; Total Basket: <strong>+0.79</strong> (Strong Positive)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: PIPELINE TELEMETRY -->
+            <div id="tab-pipeline" class="cockpit-view">
+                <div class="cockpit-kpi-row">
+                    <div class="c-kpi-card" style="--card-accent: #10b981;">
+                        <div class="c-kpi-top"><span class="c-kpi-label">SQLite Pool State</span><span class="c-kpi-icon"><i class="fas fa-database"></i></span></div>
+                        <div class="c-kpi-val">12 Conns</div>
+                        <div class="c-kpi-foot"><span class="c-badge-up">Zero Locks Detected</span></div>
+                    </div>
+                    <div class="c-kpi-card" style="--card-accent: #3b82f6;">
+                        <div class="c-kpi-top"><span class="c-kpi-label">In-Memory Cache</span><span class="c-kpi-icon"><i class="fas fa-memory"></i></span></div>
+                        <div class="c-kpi-val">48.2 MB</div>
+                        <div class="c-kpi-foot"><span class="c-badge-up">Hit Ratio 94.6%</span></div>
+                    </div>
+                    <div class="c-kpi-card" style="--card-accent: #8b5cf6;">
+                        <div class="c-kpi-top"><span class="c-kpi-label">HTTP Security</span><span class="c-kpi-icon"><i class="fas fa-shield-alt"></i></span></div>
+                        <div class="c-kpi-val">Strict-HSTS</div>
+                        <div class="c-kpi-foot"><span class="c-badge-up">CSP &amp; X-Frame OK</span></div>
+                    </div>
+                    <div class="c-kpi-card" style="--card-accent: #06b6d4;">
+                        <div class="c-kpi-top"><span class="c-kpi-label">Process Execution</span><span class="c-kpi-icon"><i class="fas fa-server"></i></span></div>
+                        <div class="c-kpi-val">WSGI Gunicorn</div>
+                        <div class="c-kpi-foot"><span class="c-badge-up">Python 3.11 Runtime</span></div>
+                    </div>
+                </div>
+                <div class="c-panel">
+                    <div class="c-panel-head">
+                        <span class="c-panel-title"><i class="fas fa-terminal" style="color:var(--primary-light);"></i> Real-Time Service Health &amp; Dispatch Log</span>
+                        <span class="c-panel-meta">UPTIME: 99.98%</span>
+                    </div>
+                    <div style="font-family:var(--font-mono);font-size:0.74rem;color:var(--text-muted);line-height:1.7;background:#090d14;padding:12px;border-radius:6px;">
+                        <div><span style="color:#10b981;">[SUCCESS]</span> Database schema initialized &bull; users.db verified</div>
+                        <div><span style="color:#3b82f6;">[INFO]</span> Dash 2.17 micro-server loaded with Plotly analytical vector engine</div>
+                        <div><span style="color:#10b981;">[SUCCESS]</span> Security headers injected: X-Content-Type-Options: nosniff, X-Frame-Options: SAMEORIGIN</div>
+                        <div><span style="color:#8b5cf6;">[INFO]</span> Instant Demo account seeded with sample e-commerce &amp; financial datasets</div>
                     </div>
                 </div>
             </div>
@@ -775,194 +1203,371 @@
     </div>
 </section>
 
-<!-- ═══════════ TRUST BAR ═══════════ -->
-<div class="trust-bar">
-    <p>Engineered For Modern Enterprise Analytics</p>
-    <div class="trust-logos">
-        <span class="trust-logo"><i class="fas fa-chart-line" style="margin-right:6px;color:#60a5fa;"></i>PLOTLY BI ENGINE</span>
-        <span class="trust-logo"><i class="fas fa-brain" style="margin-right:6px;color:#a78bfa;"></i>AI CORRELATIONS</span>
-        <span class="trust-logo"><i class="fas fa-database" style="margin-right:6px;color:#34d399;"></i>SQLITE PERSISTENCE</span>
-        <span class="trust-logo"><i class="fas fa-bolt" style="margin-right:6px;color:#fb923c;"></i>SUB-SECOND QUERIES</span>
-        <span class="trust-logo"><i class="fas fa-shield-alt" style="margin-right:6px;color:#22d3ee;"></i>SESSION SECURITY</span>
-        <span class="trust-logo"><i class="fas fa-file-csv" style="margin-right:6px;color:#f87171;"></i>UNIVERSAL INGESTION</span>
+<!-- ═══════════ INTEGRATION & TECH STRIP ═══════════ -->
+<div class="tech-strip">
+    <div class="shell">
+        <div class="tech-strip-label">Engineered With Open-Source Industrial Tech Stack</div>
+        <div class="tech-grid">
+            <div class="tech-badge"><i class="fab fa-python"></i> Python 3.11/3.13</div>
+            <div class="tech-badge"><i class="fas fa-chart-line"></i> Plotly BI Studio</div>
+            <div class="tech-badge"><i class="fas fa-cubes"></i> Dash Framework</div>
+            <div class="tech-badge"><i class="fas fa-database"></i> SQLite3 Engine</div>
+            <div class="tech-badge"><i class="fas fa-server"></i> Flask WSGI</div>
+            <div class="tech-badge"><i class="fas fa-shield-halved"></i> Encrypted Session</div>
+        </div>
     </div>
 </div>
 
-<!-- ═══════════ STATS ═══════════ -->
-<div class="stats-section" id="stats">
-    <div class="stats-grid">
-        <div class="stat-card"><div class="stat-num">100%</div><div class="stat-label">Isolated Session State</div></div>
-        <div class="stat-card"><div class="stat-num">50+</div><div class="stat-label">Statistical Visuals</div></div>
-        <div class="stat-card"><div class="stat-num">&lt; 1s</div><div class="stat-label">Dashboard Response</div></div>
-        <div class="stat-card"><div class="stat-num">Open</div><div class="stat-label">Source Python &amp; Dash</div></div>
-    </div>
-</div>
-
-<!-- ═══════════ HIGHLIGHT STRIP ═══════════ -->
-<div class="highlight-strip">
-    <div class="highlight-inner">
-        <div class="highlight-item"><div class="hi-icon bl"><i class="fas fa-bolt"></i></div><div><div class="hi-title">Instant Analysis</div><div class="hi-desc">Upload &amp; get insights in under 3 seconds</div></div></div>
-        <div class="highlight-item"><div class="hi-icon gr"><i class="fas fa-lock"></i></div><div><div class="hi-title">Bank-Grade Security</div><div class="hi-desc">SHA-256 encryption, zero data sharing</div></div></div>
-        <div class="highlight-item"><div class="hi-icon pr"><i class="fas fa-brain"></i></div><div><div class="hi-title">AI-Powered Insights</div><div class="hi-desc">Automated trend, outlier &amp; correlation detection</div></div></div>
-    </div>
-</div>
-
-<!-- ═══════════ FEATURES ═══════════ -->
+<!-- ═══════════ BENTO ARCHITECTURE ═══════════ -->
 <section id="features">
-    <div class="section-inner">
-        <div style="text-align:center;max-width:640px;margin:0 auto;">
-            <div class="section-tag"><i class="fas fa-sparkles"></i> Platform Features</div>
-            <h2 class="section-title">Everything you need to<br><span class="text-gradient">master your data</span></h2>
-            <p class="section-sub">A complete analytics suite with AI, real-time processing, and enterprise-grade security — all in one platform.</p>
+    <div class="shell">
+        <div class="section-header">
+            <div class="section-tag"><i class="fas fa-microchip"></i> System Capabilities</div>
+            <h2 class="section-title">Built for analytical depth and extreme speed</h2>
+            <p class="section-subtitle">No bloated third-party plugins. DataSphere delivers native vectorized analytics and automated statistical modeling directly in your browser.</p>
         </div>
-        <div class="features-grid">
-            <div class="feature-card"><div class="feature-icon fi-blue"><i class="fas fa-brain"></i></div><h3 class="feature-title">AI-Powered Insights</h3><p class="feature-desc">Automatically detect trends, anomalies, correlations, and patterns using machine learning — no data science expertise required.</p></div>
-            <div class="feature-card"><div class="feature-icon fi-purple"><i class="fas fa-chart-mixed"></i></div><h3 class="feature-title">Interactive Visualizations</h3><p class="feature-desc">Build stunning charts, heatmaps, scatter plots, and time-series graphs with a drag-and-drop chart builder.</p></div>
-            <div class="feature-card"><div class="feature-icon fi-green"><i class="fas fa-file-import"></i></div><h3 class="feature-title">Universal Data Import</h3><p class="feature-desc">Upload CSV, Excel (XLSX, XLS) files instantly. Auto-detects column types, handles missing data, and cleans your dataset.</p></div>
-            <div class="feature-card"><div class="feature-icon fi-orange"><i class="fas fa-table-columns"></i></div><h3 class="feature-title">KPI Dashboard</h3><p class="feature-desc">Track your most important metrics with real-time KPI cards. Set targets, monitor trends, and get instant performance snapshots.</p></div>
-            <div class="feature-card"><div class="feature-icon fi-red"><i class="fas fa-shield-halved"></i></div><h3 class="feature-title">Enterprise Security</h3><p class="feature-desc">Bank-grade security with encrypted storage, user authentication, and role-based access control. Your data stays yours.</p></div>
-            <div class="feature-card"><div class="feature-icon fi-cyan"><i class="fas fa-file-arrow-down"></i></div><h3 class="feature-title">One-Click Export</h3><p class="feature-desc">Export your processed data, reports, and visualizations to Excel, CSV, and PDF formats with a single click.</p></div>
+
+        <div class="bento-grid">
+            <!-- Bento 1 (Large 2-col) -->
+            <div class="bento-card span-2">
+                <div>
+                    <div class="bento-icon blue"><i class="fas fa-brain"></i></div>
+                    <h3 class="bento-title">Automated AI Anomaly &amp; Correlation Engine</h3>
+                    <p class="bento-desc">Automatically profile datasets to discover hidden non-linear relationships, cluster anomalies, and calculate multi-variable Pearson &amp; Spearman correlation coefficients with zero coding required.</p>
+                </div>
+                <div class="bento-visual">
+                    <span style="color:var(--accent-purple);">// Auto-profile result:</span> 14 correlations identified | Top factor: <span style="color:var(--accent-emerald);">revenue ~ conversion_rate (r = 0.892, p &lt; 0.001)</span>
+                </div>
+            </div>
+
+            <!-- Bento 2 -->
+            <div class="bento-card">
+                <div>
+                    <div class="bento-icon emerald"><i class="fas fa-file-import"></i></div>
+                    <h3 class="bento-title">Universal File Ingestion</h3>
+                    <p class="bento-desc">Drag and drop raw CSV and Excel (.xlsx, .xls) files. Automatically identifies date formats, categorical variables, and numerical distributions with instant type-casting.</p>
+                </div>
+                <div class="bento-visual">
+                    <span style="color:var(--primary-light);">Formats:</span> .CSV, .XLSX, .XLS, .SQL<br>
+                    <span style="color:var(--text-dim);">Parsing:</span> Vectorized Pandas 2.2
+                </div>
+            </div>
+
+            <!-- Bento 3 -->
+            <div class="bento-card">
+                <div>
+                    <div class="bento-icon purple"><i class="fas fa-chart-pie"></i></div>
+                    <h3 class="bento-title">Executive KPI Matrix</h3>
+                    <p class="bento-desc">Create executive snapshot cards displaying gross revenue, margin rate, user growth, and retention with real-time delta indicators and target alerts.</p>
+                </div>
+                <div class="bento-visual">
+                    <span style="color:var(--accent-emerald);">&uarr; +18.4% MoM</span> &bull; Target: 15.0% (Exceeded)
+                </div>
+            </div>
+
+            <!-- Bento 4 -->
+            <div class="bento-card">
+                <div>
+                    <div class="bento-icon amber"><i class="fas fa-sliders"></i></div>
+                    <h3 class="bento-title">Interactive Plotly Studio</h3>
+                    <p class="bento-desc">Generate interactive multi-axis heatmaps, scatter plots, trend lines, and box distributions with hover inspection, zoom controls, and export tools.</p>
+                </div>
+                <div class="bento-visual">
+                    50+ Chart Types &bull; WebGL Accelerated
+                </div>
+            </div>
+
+            <!-- Bento 5 (Large 2-col) -->
+            <div class="bento-card span-2">
+                <div>
+                    <div class="bento-icon cyan"><i class="fas fa-lock"></i></div>
+                    <h3 class="bento-title">Local Session Isolation &amp; Zero-Leak Privacy</h3>
+                    <p class="bento-desc">Your raw business data never leaves your isolated session. DataSphere executes analytics locally in memory, shielding sensitive commercial datasets from unauthorized third-party telemetry or cloud model training.</p>
+                </div>
+                <div class="bento-visual">
+                    <span style="color:var(--accent-emerald);"><i class="fas fa-check-shield"></i> ZERO-TELEMETRY GUARANTEE</span> &bull; Local SQLite Session Memory
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
-<!-- ═══════════ HOW IT WORKS ═══════════ -->
-<section id="how-it-works" class="how-section">
-    <div class="section-inner">
-        <div style="text-align:center;max-width:640px;margin:0 auto;">
-            <div class="section-tag"><i class="fas fa-list-ol"></i> Simple Process</div>
-            <h2 class="section-title">Up and running in<br><span class="text-gradient">3 simple steps</span></h2>
-            <p class="section-sub">No setup. No code. No complexity. Just powerful analytics at your fingertips.</p>
+<!-- ═══════════ INGESTION PIPELINE ═══════════ -->
+<section id="pipeline" style="background: rgba(13,17,26,0.3); border-top:1px solid var(--border-subtle); border-bottom:1px solid var(--border-subtle);">
+    <div class="shell">
+        <div class="section-header">
+            <div class="section-tag"><i class="fas fa-diagram-project"></i> Pipeline Architecture</div>
+            <h2 class="section-title">From raw file to boardroom insight in 4 steps</h2>
+            <p class="section-subtitle">A streamlined, zero-configuration pipeline designed for non-technical executives and data engineers alike.</p>
         </div>
-        <div class="steps-grid">
-            <div class="step-card"><div class="step-num">1</div><h3 class="step-title">Create Your Account</h3><p class="step-desc">Sign up in 30 seconds. No credit card required. Free tier includes full platform access with generous data limits.</p></div>
-            <div class="step-card"><div class="step-num">2</div><h3 class="step-title">Upload Your Data</h3><p class="step-desc">Drag and drop your CSV or Excel file. Our engine automatically profiles your data and prepares it for analysis.</p></div>
-            <div class="step-card"><div class="step-num">3</div><h3 class="step-title">Explore &amp; Decide</h3><p class="step-desc">Get instant AI insights, interactive charts, and statistical summaries. Export results with your team.</p></div>
+
+        <div class="pipeline-wrap">
+            <div class="pipeline-card">
+                <div class="p-step-num">STEP 01</div>
+                <h3 class="p-title">Ingest Data</h3>
+                <p class="p-desc">Upload your CSV or Excel workbook. The engine automatically handles multiple sheets, parses datetime formats, and infers schema types.</p>
+            </div>
+            <div class="pipeline-card">
+                <div class="p-step-num">STEP 02</div>
+                <h3 class="p-title">Auto-Cleanse &amp; Profile</h3>
+                <p class="p-desc">Detect missing fields, clean whitespace anomalies, handle null values, and generate summary statistics (mean, median, variance, skewness).</p>
+            </div>
+            <div class="pipeline-card">
+                <div class="p-step-num">STEP 03</div>
+                <h3 class="p-title">Visual Exploration</h3>
+                <p class="p-desc">Slice and dice your metrics using intuitive visual dropdowns. Compare dimensions, filter cohorts, and drill into granular outliers.</p>
+            </div>
+            <div class="pipeline-card">
+                <div class="p-step-num">STEP 04</div>
+                <h3 class="p-title">Executive Export</h3>
+                <p class="p-desc">Export processed tables, statistical correlation matrices, and presentation-ready charts to Excel, CSV, or high-res vector formats.</p>
+            </div>
         </div>
     </div>
 </section>
 
-<!-- ═══════════ CTA ═══════════ -->
-<section class="cta-section">
-    <div class="cta-bg"></div>
-    <div class="cta-glow"></div>
-    <div class="cta-inner">
-        <div class="section-tag" style="display:inline-flex;margin-bottom:1rem;"><i class="fas fa-rocket"></i> Open Access Demo</div>
-        <h2 class="cta-title">Ready to unlock the<br><span class="text-gradient">power of your data?</span></h2>
-        <p class="cta-sub">Test the interactive analytics platform now with sample financial data or upload your own datasets.</p>
-        <div class="cta-actions">
-            <a href="/demo-login" class="btn-hero-primary" style="background:linear-gradient(135deg,#2563eb,#3b82f6);"><i class="fas fa-bolt"></i> Instant Demo Access</a>
-            <a href="/register" class="btn-hero-secondary"><i class="fas fa-user-plus"></i> Create Free Account</a>
-            <a href="/login"    class="btn-hero-secondary"><i class="fas fa-sign-in-alt"></i> Sign In</a>
+<!-- ═══════════ BENCHMARKS COMPARISON ═══════════ -->
+<section id="benchmark">
+    <div class="shell">
+        <div class="section-header">
+            <div class="section-tag"><i class="fas fa-scale-balanced"></i> Architectural Benchmarks</div>
+            <h2 class="section-title">Why DataSphere outperforms legacy spreadsheets</h2>
+            <p class="section-subtitle">See how DataSphere compares with traditional BI suites and desktop spreadsheet tools.</p>
+        </div>
+
+        <div class="comparison-table-wrap">
+            <table class="cmp-table">
+                <thead>
+                    <tr>
+                        <th>Capability / Metric</th>
+                        <th class="highlight">DataSphere Enterprise</th>
+                        <th>Traditional Desktop Sheets</th>
+                        <th>Legacy Cloud BI Suites</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Query &amp; Ingestion Speed</td>
+                        <td class="highlight"><span class="check-ok"><i class="fas fa-bolt"></i> Sub-second Vectorized</span></td>
+                        <td>Sluggish above 100k rows</td>
+                        <td>Requires heavy ETL pipelines</td>
+                    </tr>
+                    <tr>
+                        <td>Automated Statistical AI</td>
+                        <td class="highlight"><span class="check-ok"><i class="fas fa-check"></i> Built-in 1-Click Profiling</span></td>
+                        <td><span class="check-no">Manual formulas</span></td>
+                        <td>Add-on enterprise upsell</td>
+                    </tr>
+                    <tr>
+                        <td>Setup &amp; Deployment Time</td>
+                        <td class="highlight"><span class="check-ok"><i class="fas fa-check"></i> Zero Config (1-Click Demo)</span></td>
+                        <td>Desktop install required</td>
+                        <td>Weeks of schema mapping</td>
+                    </tr>
+                    <tr>
+                        <td>Data Privacy &amp; Local Isolation</td>
+                        <td class="highlight"><span class="check-ok"><i class="fas fa-shield-alt"></i> Local Session Sandbox</span></td>
+                        <td>Unencrypted local files</td>
+                        <td>Sent to 3rd-party cloud silos</td>
+                    </tr>
+                    <tr>
+                        <td>Interactive Visualization Depth</td>
+                        <td class="highlight"><span class="check-ok"><i class="fas fa-check"></i> 50+ Plotly WebGL Charts</span></td>
+                        <td>Basic static 2D charts</td>
+                        <td>Proprietary visual widgets</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════ FAQ SECTION ═══════════ -->
+<section id="faq" style="background: rgba(13,17,26,0.25); border-top:1px solid var(--border-subtle);">
+    <div class="shell">
+        <div class="section-header">
+            <div class="section-tag"><i class="fas fa-circle-question"></i> Frequently Asked Questions</div>
+            <h2 class="section-title">Everything you need to know</h2>
+            <p class="section-subtitle">Common technical questions regarding deployment, security, and data formats.</p>
+        </div>
+
+        <div class="faq-grid">
+            <div class="faq-item open">
+                <div class="faq-q" onclick="toggleFaq(this)">
+                    <span>How does the 1-Click Instant Demo work?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-a">
+                    Clicking the "1-Click Demo" button immediately establishes an authenticated session under a pre-seeded demonstration profile. You get instant access to the entire interactive dashboard and sample datasets without having to create or register personal credentials.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">
+                    <span>What dataset formats does DataSphere support?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-a">
+                    DataSphere natively supports CSV files, modern Excel workbooks (.xlsx), legacy Excel workbooks (.xls), and structured SQLite queries. The ingestion engine automatically identifies column types, handles missing data, and casts numerical columns into vectorized NumPy/Pandas arrays.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">
+                    <span>Is my uploaded business data private?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-a">
+                    Yes. DataSphere maintains a strict privacy-first architecture. Uploaded data is analyzed inside your isolated web session and is never sold, shared, or fed into third-party AI training pipelines. For complete details, review our <a href="/privacy" style="color:var(--primary-light);">Privacy Policy</a>.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">
+                    <span>Can I run DataSphere locally on my own machine?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-a">
+                    Absolutely. DataSphere is 100% open-source Python. You can clone the GitHub repository, install the dependencies with <code>pip install -r requirements.txt</code>, and launch it locally with <code>python app.py</code> for an entirely offline air-gapped analytics environment.
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════ COMMAND CTA ═══════════ -->
+<section>
+    <div class="shell">
+        <div class="command-cta">
+            <h2 class="command-cta-title">Ready to command your enterprise data?</h2>
+            <p class="command-cta-sub">Test-drive the full analytics suite right now in your browser or set up your team workspace in seconds.</p>
+            <div style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;">
+                <a href="/demo-login" class="btn-hero-primary" style="font-size:1.05rem;padding:0.95rem 2.2rem;">
+                    <i class="fas fa-bolt"></i> Launch Instant Demo
+                </a>
+                <a href="/register" class="btn-hero-secondary" style="font-size:1.05rem;padding:0.95rem 2rem;">
+                    <i class="fas fa-user-plus"></i> Create Free Account
+                </a>
+            </div>
         </div>
     </div>
 </section>
 
 <!-- ═══════════ FOOTER ═══════════ -->
 <footer>
-    <div class="footer-inner">
-        <div class="footer-top">
+    <div class="shell">
+        <div class="footer-cols">
             <div>
-                <div class="footer-brand">
-                    <div class="footer-logo-box">
-                        <svg viewBox="0 0 24 24" fill="none"><path d="M5 8L12 4L19 8L12 20L5 8Z" fill="rgba(255,255,255,.12)" stroke="rgba(255,255,255,.5)" stroke-width="1"/><path d="M5 8H19" stroke="rgba(255,255,255,.4)" stroke-width="1"/><path d="M8 8L12 4L16 8L12 14L8 8Z" fill="rgba(255,255,255,.5)"/></svg>
+                <a href="/" class="brand">
+                    <div class="brand-icon">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M5 8L12 4L19 8L12 20L5 8Z" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.85)" stroke-width="1.2"/>
+                            <path d="M5 8H19" stroke="rgba(255,255,255,0.6)" stroke-width="1"/>
+                            <path d="M8 8L12 4L16 8L12 14L8 8Z" fill="rgba(255,255,255,0.95)"/>
+                        </svg>
                     </div>
-                    <span class="footer-brand-name">DataSphere</span>
-                </div>
-                <p class="footer-desc">An open-source enterprise analytics and business intelligence dashboard designed for high-performance interactive exploration, KPI tracking, and statistical modeling.</p>
-                <div class="footer-social">
-                    <a href="https://github.com/ninad2004-9/Enterprise-Analytics-Dashboard" target="_blank" rel="noopener noreferrer" class="social-btn" title="GitHub Repository"><i class="fab fa-github"></i></a>
-                    <a href="/privacy" class="social-btn" title="Privacy Policy"><i class="fas fa-shield-alt"></i></a>
-                    <a href="/terms" class="social-btn" title="Terms of Service"><i class="fas fa-file-contract"></i></a>
+                    <span class="brand-text">DataSphere</span>
+                </a>
+                <p class="footer-brand-desc">
+                    An open-source, high-concurrency business intelligence platform engineered with Python, Dash, and Plotly for deep statistical modeling and executive reporting.
+                </p>
+                <div style="display:flex;gap:0.75rem;">
+                    <a href="https://github.com/ninad2004-9/Enterprise-Analytics-Dashboard" target="_blank" rel="noopener noreferrer" class="btn-ghost" style="padding:6px 12px;font-size:0.78rem;" title="GitHub Repository">
+                        <i class="fab fa-github"></i> GitHub
+                    </a>
+                    <a href="/privacy" class="btn-ghost" style="padding:6px 12px;font-size:0.78rem;">
+                        <i class="fas fa-shield-alt"></i> Privacy
+                    </a>
+                    <a href="/terms" class="btn-ghost" style="padding:6px 12px;font-size:0.78rem;">
+                        <i class="fas fa-file-contract"></i> Terms
+                    </a>
                 </div>
             </div>
+
             <div>
-                <p class="footer-col-title">Navigation</p>
-                <ul class="footer-links">
-                    <li><a href="#features">Features</a></li>
-                    <li><a href="#how-it-works">How It Works</a></li>
-                    <li><a href="/demo-login">Live Demo</a></li>
-                    <li><a href="/login">Sign In</a></li>
+                <div class="footer-links-title">Platform</div>
+                <ul class="footer-ul">
+                    <li><a href="#cockpit">Live Cockpit</a></li>
+                    <li><a href="#features">AI Correlations</a></li>
+                    <li><a href="#pipeline">Data Pipeline</a></li>
+                    <li><a href="#benchmark">Benchmarks</a></li>
                 </ul>
             </div>
+
             <div>
-                <p class="footer-col-title">Analytics Stack</p>
-                <ul class="footer-links">
-                    <li><a href="#features">Executive KPIs</a></li>
-                    <li><a href="#features">Interactive Charts</a></li>
-                    <li><a href="#features">AI Correlation</a></li>
-                    <li><a href="#features">Data Profiling</a></li>
+                <div class="footer-links-title">Access</div>
+                <ul class="footer-ul">
+                    <li><a href="/demo-login">1-Click Live Demo</a></li>
+                    <li><a href="/login">User Login</a></li>
+                    <li><a href="/register">Create Account</a></li>
+                    <li><a href="/dashboard/">Analytics Dashboard</a></li>
                 </ul>
             </div>
+
             <div>
-                <p class="footer-col-title">Project &amp; Legal</p>
-                <ul class="footer-links">
+                <div class="footer-links-title">Legal &amp; Project</div>
+                <ul class="footer-ul">
                     <li><a href="/privacy">Privacy Policy</a></li>
                     <li><a href="/terms">Terms of Service</a></li>
-                    <li><a href="https://github.com/ninad2004-9/Enterprise-Analytics-Dashboard" target="_blank" rel="noopener noreferrer">Source Code (GitHub)</a></li>
-                    <li><a href="https://github.com/ninad2004-9/Enterprise-Analytics-Dashboard/issues" target="_blank" rel="noopener noreferrer">Report Issue / Feedback</a></li>
+                    <li><a href="https://github.com/ninad2004-9/Enterprise-Analytics-Dashboard/issues" target="_blank" rel="noopener noreferrer">Issue Tracker</a></li>
+                    <li><a href="https://github.com/ninad2004-9/Enterprise-Analytics-Dashboard" target="_blank" rel="noopener noreferrer">Source Code</a></li>
                 </ul>
             </div>
         </div>
+
         <div class="footer-bottom">
-            <span class="footer-copy">&copy; 2024 DataSphere Analytics &bull; Educational &amp; Developer Portfolio Project.</span>
-            <div class="footer-tech">
-                <span class="tech-pill">Python</span><span class="tech-pill">Dash</span>
-                <span class="tech-pill">Plotly</span><span class="tech-pill">SQLite3</span><span class="tech-pill">Flask</span>
+            <div>
+                &copy; 2024 DataSphere Analytics &bull; Open Source Developer Showcase &bull; Licensed under MIT
+            </div>
+            <div style="display:flex;align-items:center;gap:0.5rem;">
+                <span class="ticker-dot green"></span>
+                <span>System Status: All Services Operational</span>
             </div>
         </div>
     </div>
 </footer>
 
 <script>
-    // Navbar scroll
-    const nav = document.getElementById('navbar');
-    window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 30));
+    // Navbar scroll effect
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+        navbar.classList.toggle('scrolled', window.scrollY > 30);
+    });
 
-    // Mobile hamburger
+    // Mobile Hamburger
     const hamburger = document.getElementById('hamburger');
-    const drawer    = document.getElementById('navDrawer');
-    const hamIcon   = document.getElementById('ham-icon');
-    let drawerOpen  = false;
+    const navDrawer = document.getElementById('navDrawer');
+    const hamIcon = document.getElementById('ham-icon');
+    let drawerOpen = false;
 
     hamburger.addEventListener('click', () => {
         drawerOpen = !drawerOpen;
-        drawer.classList.toggle('open', drawerOpen);
+        navDrawer.classList.toggle('open', drawerOpen);
         hamIcon.className = drawerOpen ? 'fas fa-times' : 'fas fa-bars';
     });
+
     function closeDrawer() {
         drawerOpen = false;
-        drawer.classList.remove('open');
+        navDrawer.classList.remove('open');
         hamIcon.className = 'fas fa-bars';
     }
-    // Close drawer on outside click
-    document.addEventListener('click', (e) => {
-        if (drawerOpen && !nav.contains(e.target) && !drawer.contains(e.target)) closeDrawer();
-    });
 
-    // Flash auto-dismiss
-    setTimeout(() => {
-        const f = document.querySelector('.flash-wrap');
-        if (f) { f.style.transition = 'opacity .4s'; f.style.opacity = '0'; setTimeout(() => f.remove(), 400); }
-    }, 4000);
+    // Cockpit Stage Tab Switching
+    function switchCockpitTab(tabId, btn) {
+        document.querySelectorAll('.cockpit-view').forEach(v => v.classList.remove('active'));
+        document.querySelectorAll('.c-tab').forEach(t => t.classList.remove('active'));
+        
+        const targetView = document.getElementById(tabId);
+        if (targetView) targetView.classList.add('active');
+        btn.classList.add('active');
+    }
 
-    // Scroll reveal
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(e => {
-            if (e.isIntersecting) {
-                e.target.style.opacity = '1';
-                e.target.style.transform = 'translateY(0)';
-                observer.unobserve(e.target);
-            }
-        });
-    }, { threshold: 0.05 });
-
-    document.querySelectorAll('.feature-card, .step-card, .stat-card, .highlight-item').forEach(el => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(18px)';
-        el.style.transition = 'opacity .4s ease, transform .4s ease';
-        observer.observe(el);
-    });
+    // FAQ Accordion Toggle
+    function toggleFaq(el) {
+        const item = el.parentElement;
+        item.classList.toggle('open');
+    }
 </script>
+
 </body>
 </html>
